@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}{{ o.numero }} — AVS{% endblock %}
+{% block content %}
+<h1>{{ o.numero }} <span class="badge {{ rota_status[o.status] }}">{{ status_label[o.status] }}</span></h1>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Cliente</h3>
+    <table>
+      <tbody>
+        <tr><th>Nome</th><td>{{ o.cliente.nome if o.cliente else '—' }}</td></tr>
+        <tr><th>Telefone</th><td>{{ o.cliente.telefone or '—' if o.cliente else '—' }}</td></tr>
+        <tr><th>Endereço</th><td>{{ o.cliente.endereco or '—' if o.cliente else '—' }}</td></tr>
+        <tr><th>Título</th><td>{{ o.titulo or '—' }}</td></tr>
+        <tr><th>Local</th><td>{{ o.local_servico or '—' }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  {% if o.equipamento %}
+  <div class="card">
+    <h3>Equipamento</h3>
+    <table>
+      <tbody>
+        <tr><th>Descrição</th><td>{{ o.equipamento.descricao or '—' }}</td></tr>
+        <tr><th>Marca</th><td>{{ o.equipamento.marca or '—' }}</td></tr>
+        <tr><th>Modelo</th><td>{{ o.equipamento.modelo or '—' }}</td></tr>
+        <tr><th>Nº de série</th><td>{{ o.equipamento.numero_serie or '—' }}</td></tr>
+        <tr><th>Patrimônio</th><td>{{ o.equipamento.patrimonio or '—' }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3>Relatório</h3>
+  <div class="actions">
+    <a class="btn sm" href="/os/{{ o.id }}/relatorio">Editar relatório</a>
+    {% if o.os_pdf_url %}
+    <a class="btn sec sm" href="{{ o.os_pdf_url }}" target="_blank">Abrir PDF</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <h3>Custos</h3>
+  <table>
+    <thead>
+      <tr><th>Descrição</th><th>Categoria</th><th class="num">Valor</th><th></th></tr>
+    </thead>
+    <tbody>
+    {% for c in o.custos %}
+      <tr>
+        <td>{{ c.descricao }}</td>
+        <td>{{ c.categoria or '—' }}</td>
+        <td class="num mono">{{ c.valor_centavos|brl_c }}</td>
+        <td class="num">
+          <form method="post" action="/os/{{ o.id }}/custos/{{ c.id }}/excluir">
+            <button class="btn danger sm" type="submit">Excluir</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+      <tr>
+        <th colspan="2" class="num">Total</th>
+        <td class="num mono">{{ custo_total|brl_c }}</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <form method="post" action="/os/{{ o.id }}/custos">
+    <div class="row">
+      <div>
+        <label for="c_descricao">Descrição</label>
+        <input type="text" id="c_descricao" name="descricao" required>
+      </div>
+      <div>
+        <label for="c_categoria">Categoria</label>
+        <input type="text" id="c_categoria" name="categoria">
+      </div>
+      <div>
+        <label for="c_valor">Valor (R$)</label>
+        <input type="text" id="c_valor" name="valor" value="0,00" required>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn sm" type="submit">Lançar custo</button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Situação</h3>
+  <table>
+    <tbody>
+      <tr><th>Total da OS</th><td class="num mono">{{ o.total_centavos|brl_c }}</td></tr>
+      {% if o.status == 'recebido' %}
+      <tr><th>Recebido em</th><td class="mono">{{ o.data_recebimento.strftime('%d/%m/%Y') if o.data_recebimento else '—' }}</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+  {% if transicoes %}
+  <div class="actions">
+    {% for dest, label in transicoes.items() %}
+    <form method="post" action="/os/{{ o.id }}/status">
+      <input type="hidden" name="status" value="{{ dest }}">
+      <button class="btn sm" type="submit">{{ label }}</button>
+    </form>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

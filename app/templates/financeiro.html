@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Financeiro — AVS{% endblock %}
+{% block content %}
+<h1>Financeiro</h1>
+<p class="muted mono">{{ mes }}</p>
+
+<div class="grid grid-kpi">
+  <div class="kpi"><div class="label">Receita</div><div class="value pos">{{ receita|brl_c }}</div></div>
+  <div class="kpi"><div class="label">Custo</div><div class="value">{{ custo_v|brl_c }}</div></div>
+  <div class="kpi"><div class="label">Despesas</div><div class="value">{{ despesas|brl_c }}</div></div>
+  <div class="kpi"><div class="label">Lucro</div><div class="value {{ 'pos' if lucro >= 0 else 'neg' }}">{{ lucro|brl_c }}</div></div>
+  <div class="kpi"><div class="label">Margem</div><div class="value">{{ margem }}%</div></div>
+</div>
+
+<div class="card">
+  <h3>Últimas despesas</h3>
+  {% if ultimas_despesas %}
+  <table>
+    <thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th class="num">Valor</th></tr></thead>
+    <tbody>
+    {% for d in ultimas_despesas %}
+      <tr>
+        <td class="mono">{{ d.data_despesa.strftime('%d/%m') }}</td>
+        <td><span class="badge badge-muted">{{ d.categoria }}</span></td>
+        <td>{{ d.descricao }}</td>
+        <td class="num mono">{{ d.valor_centavos|brl_c }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="muted">Nenhuma despesa lançada.</p>{% endif %}
+</div>
+{% endblock %}

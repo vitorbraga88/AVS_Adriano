@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Equipamentos — AVS{% endblock %}
+{% block content %}
+<h1>Equipamentos</h1>
+
+<form method="get" action="/equipamentos" class="row">
+  <div>
+    <label for="filtro_cliente">Cliente</label>
+    <select id="filtro_cliente" name="cliente_id">
+      <option value="">Todos</option>
+      {% for c in clientes %}
+      <option value="{{ c.id }}"{% if cliente_id == c.id %} selected{% endif %}>{{ c.nome }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="actions">
+    <button type="submit" class="btn sec">Filtrar</button>
+  </div>
+</form>
+
+<div class="card">
+  <h3>Novo equipamento</h3>
+  <form method="post" action="/equipamentos">
+    <div class="row">
+      <div>
+        <label for="cliente_id">Cliente</label>
+        <select id="cliente_id" name="cliente_id" required>
+          {% for c in clientes %}
+          <option value="{{ c.id }}">{{ c.nome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="descricao">Descrição</label>
+        <input type="text" id="descricao" name="descricao">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="marca">Marca</label>
+        <input type="text" id="marca" name="marca">
+      </div>
+      <div>
+        <label for="modelo">Modelo</label>
+        <input type="text" id="modelo" name="modelo">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="numero_serie">Nº de série</label>
+        <input type="text" id="numero_serie" name="numero_serie">
+      </div>
+      <div>
+        <label for="patrimonio">Patrimônio</label>
+        <input type="text" id="patrimonio" name="patrimonio">
+      </div>
+    </div>
+    <label for="observacoes">Observações</label>
+    <textarea id="observacoes" name="observacoes"></textarea>
+    <div class="actions">
+      <button type="submit" class="btn">&#9889; Adicionar equipamento</button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Cadastro</h3>
+  {% if equipamentos %}
+  <table>
+    <thead><tr><th>Cliente</th><th>Descrição</th><th>Marca</th><th>Modelo</th><th>Nº série</th><th>Patrimônio</th><th></th></tr></thead>
+    <tbody>
+    {% for e in equipamentos %}
+      <tr>
+        <td>{{ e.cliente.nome if e.cliente else '—' }}</td>
+        <td>{{ e.descricao or '—' }}</td>
+        <td>{{ e.marca or '—' }}</td>
+        <td>{{ e.modelo or '—' }}</td>
+        <td class="mono">{{ e.numero_serie or '—' }}</td>
+        <td class="mono">{{ e.patrimonio or '—' }}</td>
+        <td class="num">
+          <div class="actions" style="margin:0;justify-content:flex-end">
+            <a class="btn sec sm" href="/equipamentos/{{ e.id }}/editar">Editar</a>
+            <form method="post" action="/equipamentos/{{ e.id }}/excluir" style="display:inline">
+              <button type="submit" class="btn danger sm">Excluir</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p class="muted">Nenhum equipamento cadastrado.</p>{% endif %}
+</div>
+{% endblock %}

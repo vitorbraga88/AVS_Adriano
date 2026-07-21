@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Orçamentos — AVS{% endblock %}
+{% block content %}
+<h1>Orçamentos</h1>
+
+<div class="actions">
+  <a class="btn sm {{ 'sec' if status_atual }}" href="/orcamentos">Todos</a>
+  {% for s in status_filtros %}
+  <a class="btn sm {{ 'sec' if status_atual != s }}" href="/orcamentos?status={{ s }}">{{ status_label[s] }}</a>
+  {% endfor %}
+</div>
+
+<div class="card">
+  {% if ordens %}
+  <table>
+    <thead>
+      <tr>
+        <th>Número</th><th>Cliente</th><th>Título</th><th>Status</th>
+        <th class="num">Total</th><th>Criado</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for o in ordens %}
+      <tr>
+        <td><a href="/orcamentos/{{ o.id }}" class="mono">{{ o.numero }}</a></td>
+        <td>{{ o.cliente.nome if o.cliente else '—' }}</td>
+        <td>{{ o.titulo or '—' }}</td>
+        <td><span class="badge {{ rota_status[o.status] }}">{{ status_label[o.status] }}</span></td>
+        <td class="num mono">{{ o.total_centavos|brl_c }}</td>
+        <td class="mono">{{ o.created_at.strftime('%d/%m') if o.created_at else '—' }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">Nenhum orçamento encontrado.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block fab %}
+<a class="btn fab" href="/orcamentos/novo">&#9889; Novo orçamento</a>
+{% endblock %}

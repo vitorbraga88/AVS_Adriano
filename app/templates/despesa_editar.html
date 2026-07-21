@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Editar despesa — AVS{% endblock %}
+{% block content %}
+<h1>Editar despesa</h1>
+
+<div class="card">
+  <form method="post" action="/despesas/{{ d.id }}">
+    <div class="row">
+      <div>
+        <label for="categoria">Categoria</label>
+        <select id="categoria" name="categoria">
+          {% for cat in categorias %}
+          <option value="{{ cat }}"{% if cat == d.categoria %} selected{% endif %}>{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="descricao">Descrição</label>
+        <input type="text" id="descricao" name="descricao" value="{{ d.descricao }}" required>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="valor">Valor</label>
+        <input type="text" id="valor" name="valor" inputmode="decimal" value="{{ '%.2f'|format(d.valor_centavos/100)|replace('.',',') }}">
+      </div>
+      <div>
+        <label for="data_despesa">Data</label>
+        <input type="date" id="data_despesa" name="data_despesa" value="{{ d.data_despesa.isoformat() }}">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="fornecedor">Fornecedor</label>
+        <input type="text" id="fornecedor" name="fornecedor" value="{{ d.fornecedor or '' }}">
+      </div>
+      <div>
+        <label for="nf">NF</label>
+        <input type="text" id="nf" name="nf" value="{{ d.nf or '' }}">
+      </div>
+    </div>
+    <label for="observacoes">Observações</label>
+    <textarea id="observacoes" name="observacoes">{{ d.observacoes or '' }}</textarea>
+    <div class="actions">
+      <button type="submit" class="btn">&#9889; Salvar</button>
+      <a class="btn sec" href="/despesas">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

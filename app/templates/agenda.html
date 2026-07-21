@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Agenda — AVS{% endblock %}
+{% block content %}
+<h1>Agenda</h1>
+<div class="actions">
+  <a class="btn sec sm" href="/agenda/calendario">Ver calendário</a>
+</div>
+
+<div class="kanban">
+  {% for status in colunas_kanban %}
+  <div class="kcol">
+    <h3>{{ status_label[status] }}</h3>
+    {% for item in colunas[status] %}
+    {% set base = '/orcamentos' if status == 'orcamento' else '/os' %}
+    <div class="kcard">
+      <a href="{{ base }}/{{ item.o.id }}" class="mono">{{ item.o.numero }}</a>
+      <div>{{ item.o.cliente.nome if item.o.cliente else '—' }}</div>
+      {% if item.o.data_servico %}
+      <div class="muted mono">{{ item.o.data_servico.strftime('%d/%m %H:%M') }}</div>
+      {% endif %}
+      {% if item.transicoes %}
+      <div class="actions">
+        {% for dest, label in item.transicoes.items() %}
+        <form method="post" action="{{ base }}/{{ item.o.id }}/status">
+          <input type="hidden" name="status" value="{{ dest }}">
+          <button class="btn sm" type="submit">{{ label }}</button>
+        </form>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+    <p class="muted">—</p>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

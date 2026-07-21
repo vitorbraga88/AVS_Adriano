@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Relatório de OS — AVS{% endblock %}
+{% block head %}
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+{% endblock %}
+{% block content %}
+<h1>Relatório de Serviço</h1>
+<p class="muted mono">{{ ordem.numero }} — {{ ordem.cliente.nome if ordem.cliente else '-' }}</p>
+
+<script type="application/json" id="ordem-data">
+{
+  "id": {{ ordem.id }},
+  "numero": {{ ordem.numero|tojson }},
+  "titulo": {{ (ordem.titulo or '')|tojson }},
+  "cliente": {"nome": {{ (ordem.cliente.nome if ordem.cliente else '')|tojson }}},
+  "equipamento": {% if ordem.equipamento %}{
+    "descricao": {{ (ordem.equipamento.descricao or '')|tojson }},
+    "marca": {{ (ordem.equipamento.marca or '')|tojson }},
+    "modelo": {{ (ordem.equipamento.modelo or '')|tojson }},
+    "numero_serie": {{ (ordem.equipamento.numero_serie or '')|tojson }},
+    "patrimonio": {{ (ordem.equipamento.patrimonio or '')|tojson }}
+  }{% else %}null{% endif %}
+}
+</script>
+
+<div class="card">
+  <label>Técnico responsável</label>
+  <input id="f-tecnico" placeholder="Nome do técnico">
+</div>
+
+<div id="blocos"></div>
+<button type="button" class="btn sec" id="btn-add-bloco">+ Adicionar campo</button>
+
+<div class="card" style="margin-top:16px">
+  <h3>Fotos</h3>
+  <input type="file" id="foto-input" accept="image/*" capture="environment" multiple>
+  <div class="foto-grid" id="foto-grid"></div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Assinatura do cliente</h3>
+    <canvas class="sigpad" id="sig-cliente"></canvas>
+    <button type="button" class="btn sec sm" id="clear-cliente" style="margin-top:8px">Limpar</button>
+  </div>
+  <div class="card">
+    <h3>Assinatura do técnico</h3>
+    <canvas class="sigpad" id="sig-tecnico"></canvas>
+    <button type="button" class="btn sec sm" id="clear-tecnico" style="margin-top:8px">Limpar</button>
+  </div>
+</div>
+
+<div class="actions">
+  <button type="button" class="btn" id="btn-finalizar">⚡ Gerar relatório e enviar</button>
+  <a class="btn sec" href="/os/{{ ordem.id }}">Voltar</a>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/validation.js"></script>
+<script src="/static/js/signature.js"></script>
+<script src="/static/js/camera.js"></script>
+<script src="/static/js/offline.js"></script>
+<script src="/static/js/voice.js"></script>
+<script src="/static/js/pdf.js"></script>
+<script src="/static/js/os.js"></script>
+{% endblock %}

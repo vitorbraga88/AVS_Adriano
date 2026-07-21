@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Despesas — AVS{% endblock %}
+{% block content %}
+<h1>Despesas</h1>
+<p class="muted mono">{{ mes_label }}</p>
+
+<form method="get" action="/despesas" class="row">
+  <div>
+    <label for="mes">Mês</label>
+    <input type="month" id="mes" name="mes" value="{{ mes }}">
+  </div>
+  <div class="actions">
+    <button type="submit" class="btn sec">Ir</button>
+  </div>
+</form>
+
+<div class="card">
+  <h3>Nova despesa</h3>
+  <form method="post" action="/despesas">
+    <div class="row">
+      <div>
+        <label for="categoria">Categoria</label>
+        <select id="categoria" name="categoria">
+          {% for cat in categorias %}
+          <option value="{{ cat }}">{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="descricao">Descrição</label>
+        <input type="text" id="descricao" name="descricao" required>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="valor">Valor</label>
+        <input type="text" id="valor" name="valor" inputmode="decimal" value="0,00">
+      </div>
+      <div>
+        <label for="data_despesa">Data</label>
+        <input type="date" id="data_despesa" name="data_despesa" value="{{ hoje }}">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="fornecedor">Fornecedor</label>
+        <input type="text" id="fornecedor" name="fornecedor">
+      </div>
+      <div>
+        <label for="nf">NF</label>
+        <input type="text" id="nf" name="nf">
+      </div>
+    </div>
+    <label for="observacoes">Observações</label>
+    <textarea id="observacoes" name="observacoes"></textarea>
+    <div class="actions">
+      <button type="submit" class="btn">&#9889; Adicionar despesa</button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Lançamentos</h3>
+  {% if despesas %}
+  <table>
+    <thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th class="num">Valor</th><th>Fornecedor</th><th></th></tr></thead>
+    <tbody>
+    {% for d in despesas %}
+      <tr>
+        <td class="mono">{{ d.data_despesa.strftime('%d/%m') }}</td>
+        <td><span class="badge badge-muted">{{ d.categoria }}</span></td>
+        <td>{{ d.descricao }}</td>
+        <td class="num mono">{{ d.valor_centavos|brl_c }}</td>
+        <td>{{ d.fornecedor or '—' }}</td>
+        <td class="num">
+          <div class="actions" style="margin:0;justify-content:flex-end">
+            <a class="btn sec sm" href="/despesas/{{ d.id }}/editar">Editar</a>
+            <form method="post" action="/despesas/{{ d.id }}/excluir" style="display:inline">
+              <button type="submit" class="btn danger sm">Excluir</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr><td colspan="3" class="mono">Total</td><td class="num mono">{{ total|brl_c }}</td><td colspan="2"></td></tr>
+    </tfoot>
+  </table>
+  {% else %}<p class="muted">Nenhuma despesa neste mês.</p>{% endif %}
+</div>
+{% endblock %}

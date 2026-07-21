@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Editar cliente — AVS{% endblock %}
+{% block content %}
+<h1>Editar cliente</h1>
+
+<div class="card">
+  <form method="post" action="/clientes/{{ c.id }}">
+    <div class="row">
+      <div>
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" value="{{ c.nome }}" required>
+      </div>
+      <div>
+        <label for="telefone">Telefone</label>
+        <input type="text" id="telefone" name="telefone" value="{{ c.telefone or '' }}">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="endereco">Endereço</label>
+        <input type="text" id="endereco" name="endereco" value="{{ c.endereco or '' }}">
+      </div>
+      <div>
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" value="{{ c.email or '' }}">
+      </div>
+    </div>
+    <label for="observacoes">Observações</label>
+    <textarea id="observacoes" name="observacoes">{{ c.observacoes or '' }}</textarea>
+    <div class="actions">
+      <button type="submit" class="btn">&#9889; Salvar</button>
+      <a class="btn sec" href="/clientes">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

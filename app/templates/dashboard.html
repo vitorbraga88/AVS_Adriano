@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — AVS{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<p class="muted mono">Mês corrente</p>
+
+<div class="grid grid-kpi">
+  <div class="kpi"><div class="label">Receita</div><div class="value pos">{{ resumo.receita|brl_c }}</div></div>
+  <div class="kpi"><div class="label">Custo</div><div class="value">{{ resumo.custo_vendas|brl_c }}</div></div>
+  <div class="kpi"><div class="label">Despesas</div><div class="value">{{ resumo.despesas|brl_c }}</div></div>
+  <div class="kpi"><div class="label">Lucro</div><div class="value {{ 'pos' if resumo.lucro >= 0 else 'neg' }}">{{ resumo.lucro|brl_c }}</div></div>
+  <div class="kpi"><div class="label">Margem</div><div class="value">{{ resumo.margem }}%</div></div>
+  <div class="kpi"><div class="label">A receber</div><div class="value">{{ contas|brl_c }}</div></div>
+  <div class="kpi"><div class="label">Ticket médio</div><div class="value">{{ ticket|brl_c if ticket is not none else '—' }}</div></div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Ordens por status</h3>
+    <table>
+      <tbody>
+      {% for c in contagens %}
+        <tr>
+          <td><a href="/agenda"><span class="badge {{ rota_status[c.status] }}">{{ status_label[c.status] }}</span></a></td>
+          <td class="num mono">{{ c.qtd }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Próximos serviços</h3>
+    {% if proximos %}
+    <table>
+      <tbody>
+      {% for o in proximos %}
+        <tr>
+          <td><a href="/os/{{ o.id }}">{{ o.numero }}</a><br><span class="muted">{{ o.cliente.nome if o.cliente else '-' }}</span></td>
+          <td class="num mono">{{ o.data_servico.strftime('%d/%m %H:%M') if o.data_servico else '-' }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}<p class="muted">Nenhum serviço agendado.</p>{% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <h3>Ordens por semana (8 semanas)</h3>
+  <table>
+    <thead><tr><th>Semana</th><th class="num">Ordens</th><th class="num">Valor</th></tr></thead>
+    <tbody>
+    {% for s in serie %}
+      <tr><td class="mono">{{ s.label }}</td><td class="num mono">{{ s.qtd }}</td><td class="num mono">{{ s.valor|brl_c }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<a class="btn fab" href="/orcamentos/novo">&#9889; Novo orçamento</a>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Novo orçamento — AVS{% endblock %}
+{% block head %}
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+{% endblock %}
+{% block content %}
+<h1>Novo orçamento</h1>
+<p class="muted mono">Validade automática: <span id="validade">+7 dias</span></p>
+
+<div class="card">
+  <h3>Cliente</h3>
+  <div class="row">
+    <div><label>Nome</label><input id="f-nome" list="dl-clientes" autocomplete="off"></div>
+    <div><label>Telefone</label><input id="f-telefone" inputmode="tel"></div>
+  </div>
+  <label>Endereço</label><input id="f-endereco">
+  <datalist id="dl-clientes"></datalist>
+  <input type="hidden" id="f-cliente-id">
+</div>
+
+<div class="card">
+  <div class="bhead" style="display:flex;justify-content:space-between;align-items:center">
+    <h3 style="margin:0">Equipamento (opcional)</h3>
+    <button type="button" class="btn sec sm" id="eq-toggle">Adicionar equipamento</button>
+  </div>
+  <div id="eq-box" hidden>
+    <label>Equipamento já cadastrado</label>
+    <select id="eq-select"><option value="">— novo equipamento —</option></select>
+    <div class="row">
+      <div><label>Descrição</label><input id="eq-descricao" placeholder="Ex.: Quadro geral"></div>
+      <div><label>Marca</label><input id="eq-marca"></div>
+    </div>
+    <div class="row">
+      <div><label>Modelo</label><input id="eq-modelo"></div>
+      <div><label>Nº Série</label><input id="eq-serie"></div>
+      <div><label>Patrimônio</label><input id="eq-patrimonio"></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Serviço</h3>
+  <div class="row">
+    <div><label>Tipo</label>
+      <select id="f-tipo">
+        <option value="">—</option>
+        <option>instalacao</option><option>manutencao</option>
+        <option>laudo</option><option>projeto</option><option>outro</option>
+      </select></div>
+    <div><label>Prioridade</label>
+      <select id="f-prioridade"><option>normal</option><option>baixa</option><option>alta</option></select></div>
+  </div>
+  <label>Título do serviço</label><input id="f-titulo" placeholder="Ex.: Instalação de quadro trifásico">
+  <label>Local do serviço</label><input id="f-local">
+</div>
+
+<div class="card">
+  <h3>Itens</h3>
+  <div id="itens"></div>
+  <button type="button" class="btn sec sm" id="btn-add-item">+ Item</button>
+  <div class="row" style="margin-top:12px">
+    <div><label>Desconto (%)</label><input id="f-desconto" inputmode="decimal" value="0"></div>
+    <div style="text-align:right"><label>Total</label>
+      <div class="mono" style="font-size:22px;font-weight:800" id="total">R$ 0,00</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h3 style="margin:0">Observações</h3>
+    <button type="button" class="btn sec sm" id="voz-obs">🎤 Voz</button>
+  </div>
+  <textarea id="f-observacoes"></textarea>
+</div>
+
+<div class="card">
+  <h3>Fotos</h3>
+  <input type="file" id="foto-input" accept="image/*" capture="environment" multiple>
+  <div class="foto-grid" id="foto-grid"></div>
+</div>
+
+<div class="card">
+  <h3>Assinatura do cliente</h3>
+  <canvas class="sigpad" id="sigpad"></canvas>
+  <button type="button" class="btn sec sm" id="sig-clear" style="margin-top:8px">Limpar</button>
+</div>
+
+<div class="actions">
+  <button type="button" class="btn" id="btn-finalizar">⚡ Finalizar e enviar</button>
+  <a class="btn sec" href="/orcamentos">Cancelar</a>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/validation.js"></script>
+<script src="/static/js/signature.js"></script>
+<script src="/static/js/camera.js"></script>
+<script src="/static/js/offline.js"></script>
+<script src="/static/js/voice.js"></script>
+<script src="/static/js/pdf.js"></script>
+<script src="/static/js/orcamento.js"></script>
+{% endblock %}

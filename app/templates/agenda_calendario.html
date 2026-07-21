@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Calendário — AVS{% endblock %}
+{% block content %}
+<h1>{{ mes_label }}</h1>
+<div class="actions">
+  <a class="btn sec sm" href="/agenda/calendario?mes={{ mes_ant }}">&#8592; Anterior</a>
+  <a class="btn sec sm" href="/agenda/calendario?mes={{ mes_prox }}">Próximo &#8594;</a>
+  <a class="btn sec sm" href="/agenda">Kanban</a>
+</div>
+
+<div class="cal">
+  {% for dia in dias_semana %}
+  <div class="h">{{ dia }}</div>
+  {% endfor %}
+  {% for semana in semanas %}
+    {% for d in semana %}
+    <div class="d{% if d.strftime('%Y-%m') != mes %} out{% endif %}{% if d == hoje %} today{% endif %}">
+      <div class="mono">{{ d.day }}</div>
+      {% for ev in eventos[d] %}
+      <a class="ev" href="/os/{{ ev.id }}">
+        <span class="mono">{{ ev.data_servico.strftime('%H:%M') }}</span>
+        {{ ev.cliente.nome if ev.cliente else '—' }}
+      </a>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  {% endfor %}
+</div>
+{% endblock %}

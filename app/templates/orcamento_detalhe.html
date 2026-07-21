@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}{{ o.numero }} — AVS{% endblock %}
+{% block content %}
+<h1>{{ o.numero }} <span class="badge {{ rota_status[o.status] }}">{{ status_label[o.status] }}</span></h1>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Cliente</h3>
+    <table>
+      <tbody>
+        <tr><th>Nome</th><td>{{ o.cliente.nome if o.cliente else '—' }}</td></tr>
+        <tr><th>Telefone</th><td>{{ o.cliente.telefone or '—' if o.cliente else '—' }}</td></tr>
+        <tr><th>Endereço</th><td>{{ o.cliente.endereco or '—' if o.cliente else '—' }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Serviço</h3>
+    <table>
+      <tbody>
+        <tr><th>Tipo</th><td>{{ o.tipo or '—' }}</td></tr>
+        <tr><th>Prioridade</th><td>{{ o.prioridade or '—' }}</td></tr>
+        <tr><th>Local</th><td>{{ o.local_servico or '—' }}</td></tr>
+        <tr><th>Validade</th><td class="mono">{{ o.validade_at.strftime('%d/%m/%Y') if o.validade_at else '—' }}</td></tr>
+        <tr><th>Observações</th><td>{{ o.observacoes or '—' }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if o.equipamento %}
+<div class="card">
+  <h3>Equipamento</h3>
+  <table>
+    <tbody>
+      <tr><th>Descrição</th><td>{{ o.equipamento.descricao or '—' }}</td></tr>
+      <tr><th>Marca</th><td>{{ o.equipamento.marca or '—' }}</td></tr>
+      <tr><th>Modelo</th><td>{{ o.equipamento.modelo or '—' }}</td></tr>
+      <tr><th>Nº de série</th><td>{{ o.equipamento.numero_serie or '—' }}</td></tr>
+      <tr><th>Patrimônio</th><td>{{ o.equipamento.patrimonio or '—' }}</td></tr>
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<div class="card">
+  <h3>Itens</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Descrição</th><th class="num">Qtd</th>
+        <th class="num">Preço unit.</th><th class="num">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for i in o.itens %}
+      <tr>
+        <td>{{ i.descricao }}</td>
+        <td class="num mono">{{ i.quantidade }} {{ i.unidade }}</td>
+        <td class="num mono">{{ i.preco_centavos|brl_c }}</td>
+        <td class="num mono">{{ (i.preco_centavos * i.quantidade)|brl_c }}</td>
+      </tr>
+    {% endfor %}
+      <tr>
+        <th colspan="3" class="num">Total{% if o.desconto_pct %} (desconto {{ o.desconto_pct }}%){% endif %}</th>
+        <td class="num mono">{{ o.total_centavos|brl_c }}</td>
+      </tr>
+    </tbody>
+  </table>
+  {% if o.orcamento_pdf_url %}
+  <div class="actions">
+    <a class="btn sec sm" href="{{ o.orcamento_pdf_url }}" target="_blank">Abrir PDF</a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="card">
+  <h3>Agendamento</h3>
+  <form method="post" action="/orcamentos/{{ o.id }}/agendar">
+    <label for="data_servico">Data do serviço</label>
+    <input type="datetime-local" id="data_servico" name="data_servico"
+           value="{{ o.data_servico.strftime('%Y-%m-%dT%H:%M') if o.data_servico else '' }}">
+    <div class="actions">
+      <button class="btn sm" type="submit">Agendar</button>
+    </div>
+  </form>
+</div>
+
+{% if transicoes or o.status in ['aprovado', 'em_execucao', 'concluido', 'recebido'] %}
+<div class="card">
+  <h3>Ações</h3>
+  <div class="actions">
+    {% for dest, label in transicoes.items() %}
+    <form method="post" action="/orcamentos/{{ o.id }}/status">
+      <input type="hidden" name="status" value="{{ dest }}">
+      <button class="btn sm" type="submit">{{ label }}</button>
+    </form>
+    {% endfor %}
+    {% if o.status in ['aprovado', 'em_execucao', 'concluido', 'recebido'] %}
+    <a class="btn sec sm" href="/os/{{ o.id }}">Ver OS</a>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}
