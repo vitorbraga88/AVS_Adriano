@@ -1,6 +1,8 @@
 # Prompt — Remodelagem dos documentos do AVS Admin
 
-**Antes de colar:** copie para a raiz do repositório os arquivos `avs-documentos.html`, `logo-avs-512.png` e `logo-avs-256.png`. Depois cole o prompt abaixo no Claude Code.
+**Repositório:** https://github.com/vitorbraga88/AVS_Adriano
+
+**Antes de colar:** os arquivos `avs-documentos.html`, `logo-avs-512.png`, `logo-avs-256.png` e este prompt já estão na raiz do repositório. Dê `git pull` e cole o prompt abaixo no Claude Code.
 
 ---
 
