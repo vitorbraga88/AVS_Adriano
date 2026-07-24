@@ -46,27 +46,34 @@ def _janela_dia(dia):
     return inicio, fim
 
 
+def _num_link(numero: str, ordem_id: int, kind: str, base: str) -> str:
+    return f"[{numero}]({base}/{kind}/{ordem_id})" if base else numero
+
+
 async def cmd_menu(client, chat_id):
     if not autorizado(chat_id):
         return
     base = public_url()
-    texto = (
-        "*AVS Soluções Elétricas*\n"
-        "Painel administrativo.\n\n"
-        "Comandos:\n"
-        "/hoje — serviços de hoje\n"
-        "/semana — agenda da semana\n"
-        "/orcamentos — últimos orçamentos"
-    )
+    linhas = ["*AVS Soluções Elétricas*", "Painel administrativo."]
+    if base:
+        linhas += ["", f"🌐 Aplicação: {base}/"]
+    linhas += [
+        "",
+        "Comandos:",
+        "/hoje — serviços de hoje",
+        "/semana — agenda da semana",
+        "/orcamentos — últimos orçamentos",
+    ]
     reply_markup = None
     if base:
         reply_markup = {
             "inline_keyboard": [
-                [{"text": "📋 Orçamentos", "url": base + "/orcamentos"}],
-                [{"text": "🗓️ Agenda", "url": base + "/agenda"}],
+                [{"text": "🌐 Abrir aplicação", "url": base + "/"}],
+                [{"text": "📄 Orçamentos (PDFs)", "url": base + "/arquivos/orcamentos"}],
+                [{"text": "🧾 Relatórios de Serviço (PDFs)", "url": base + "/arquivos/os"}],
             ]
         }
-    await client.send_message(chat_id, texto, reply_markup=reply_markup, parse_mode="Markdown")
+    await client.send_message(chat_id, "\n".join(linhas), reply_markup=reply_markup, parse_mode="Markdown")
 
 
 async def cmd_hoje(client, chat_id, db):
@@ -89,10 +96,12 @@ async def cmd_hoje(client, chat_id, db):
         await client.send_message(chat_id, "Nenhum serviço agendado para hoje.")
         return
     linhas = [f"*Serviços de hoje ({dia.strftime('%d/%m')})*"]
+    base = public_url()
     for o in ordens:
         cli_nome = o.cliente.nome if o.cliente else "—"
         hora = o.data_servico.strftime("%H:%M") if o.data_servico else ""
-        linhas.append(f"• {hora} — {o.numero} — {cli_nome} — {_brl(o.total_centavos)}")
+        num = _num_link(o.numero, o.id, "os", base)
+        linhas.append(f"• {hora} — {num} — {cli_nome} — {_brl(o.total_centavos)}")
     await client.send_message(chat_id, "\n".join(linhas), parse_mode="Markdown")
 
 
@@ -117,10 +126,12 @@ async def cmd_semana(client, chat_id, db):
         await client.send_message(chat_id, "Nenhum serviço agendado nos próximos 7 dias.")
         return
     linhas = ["*Agenda da semana*"]
+    base = public_url()
     for o in ordens:
         cli_nome = o.cliente.nome if o.cliente else "—"
         quando = o.data_servico.strftime("%d/%m %H:%M") if o.data_servico else ""
-        linhas.append(f"• {quando} — {o.numero} — {cli_nome} — {_brl(o.total_centavos)}")
+        num = _num_link(o.numero, o.id, "os", base)
+        linhas.append(f"• {quando} — {num} — {cli_nome} — {_brl(o.total_centavos)}")
     await client.send_message(chat_id, "\n".join(linhas), parse_mode="Markdown")
 
 
@@ -137,7 +148,9 @@ async def cmd_orcamentos(client, chat_id, db):
         await client.send_message(chat_id, "Nenhum orçamento cadastrado.")
         return
     linhas = ["*Últimos orçamentos*"]
+    base = public_url()
     for o in ordens:
         cli_nome = o.cliente.nome if o.cliente else "—"
-        linhas.append(f"• {o.numero} — {cli_nome} — {_brl(o.total_centavos)} — {o.status}")
+        num = _num_link(o.numero, o.id, "orcamentos", base)
+        linhas.append(f"• {num} — {cli_nome} — {_brl(o.total_centavos)} — {o.status}")
     await client.send_message(chat_id, "\n".join(linhas), parse_mode="Markdown")

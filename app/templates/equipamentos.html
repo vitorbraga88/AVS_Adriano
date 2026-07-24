@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Equipamentos</h1>
 
-<form method="get" action="/equipamentos" class="row">
+<form method="get" action="equipamentos" class="row">
   <div>
     <label for="filtro_cliente">Cliente</label>
     <select id="filtro_cliente" name="cliente_id">
@@ -20,7 +20,7 @@
 
 <div class="card">
   <h3>Novo equipamento</h3>
-  <form method="post" action="/equipamentos">
+  <form method="post" action="equipamentos">
     <div class="row">
       <div>
         <label for="cliente_id">Cliente</label>
@@ -79,8 +79,8 @@
         <td class="mono">{{ e.patrimonio or '—' }}</td>
         <td class="num">
           <div class="actions" style="margin:0;justify-content:flex-end">
-            <a class="btn sec sm" href="/equipamentos/{{ e.id }}/editar">Editar</a>
-            <form method="post" action="/equipamentos/{{ e.id }}/excluir" style="display:inline">
+            <a class="btn sec sm" href="equipamentos/{{ e.id }}/editar">Editar</a>
+            <form method="post" action="equipamentos/{{ e.id }}/excluir" style="display:inline">
               <button type="submit" class="btn danger sm">Excluir</button>
             </form>
           </div>

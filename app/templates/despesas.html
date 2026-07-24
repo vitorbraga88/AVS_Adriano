@@ -4,7 +4,7 @@
 <h1>Despesas</h1>
 <p class="muted mono">{{ mes_label }}</p>
 
-<form method="get" action="/despesas" class="row">
+<form method="get" action="despesas" class="row">
   <div>
     <label for="mes">Mês</label>
     <input type="month" id="mes" name="mes" value="{{ mes }}">
@@ -16,7 +16,7 @@
 
 <div class="card">
   <h3>Nova despesa</h3>
-  <form method="post" action="/despesas">
+  <form method="post" action="despesas">
     <div class="row">
       <div>
         <label for="categoria">Categoria</label>
@@ -74,8 +74,8 @@
         <td>{{ d.fornecedor or '—' }}</td>
         <td class="num">
           <div class="actions" style="margin:0;justify-content:flex-end">
-            <a class="btn sec sm" href="/despesas/{{ d.id }}/editar">Editar</a>
-            <form method="post" action="/despesas/{{ d.id }}/excluir" style="display:inline">
+            <a class="btn sec sm" href="despesas/{{ d.id }}/editar">Editar</a>
+            <form method="post" action="despesas/{{ d.id }}/excluir" style="display:inline">
               <button type="submit" class="btn danger sm">Excluir</button>
             </form>
           </div>

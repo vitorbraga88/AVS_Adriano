@@ -21,7 +21,7 @@
       <tbody>
       {% for c in contagens %}
         <tr>
-          <td><a href="/agenda"><span class="badge {{ rota_status[c.status] }}">{{ status_label[c.status] }}</span></a></td>
+          <td><a href="agenda"><span class="badge {{ rota_status[c.status] }}">{{ status_label[c.status] }}</span></a></td>
           <td class="num mono">{{ c.qtd }}</td>
         </tr>
       {% endfor %}
@@ -36,7 +36,7 @@
       <tbody>
       {% for o in proximos %}
         <tr>
-          <td><a href="/os/{{ o.id }}">{{ o.numero }}</a><br><span class="muted">{{ o.cliente.nome if o.cliente else '-' }}</span></td>
+          <td><a href="os/{{ o.id }}">{{ o.numero }}</a><br><span class="muted">{{ o.cliente.nome if o.cliente else '-' }}</span></td>
           <td class="num mono">{{ o.data_servico.strftime('%d/%m %H:%M') if o.data_servico else '-' }}</td>
         </tr>
       {% endfor %}
@@ -58,5 +58,5 @@
   </table>
 </div>
 
-<a class="btn fab" href="/orcamentos/novo">&#9889; Novo orçamento</a>
+<a class="btn fab" href="orcamentos/novo">&#9889; Novo orçamento</a>
 {% endblock %}

@@ -73,7 +73,7 @@ window.AVS = window.AVS || {};
       nomeInput.addEventListener("change", function () {
         var nome = nomeInput.value.trim();
         if (!nome) return;
-        fetch("/api/assinatura?nome=" + encodeURIComponent(nome))
+        fetch("api/assinatura?nome=" + encodeURIComponent(nome))
           .then(function (r) { return r.ok ? r.json() : null; })
           .then(function (d) { if (d && d.data_url && pad.isEmpty()) pad.load(d.data_url); })
           .catch(function () {});
@@ -84,7 +84,7 @@ window.AVS = window.AVS || {};
 
   function saveMemory(nome, dataUrl) {
     if (!nome || !dataUrl) return Promise.resolve();
-    return fetch("/api/assinatura", {
+    return fetch("api/assinatura", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nome: nome, data_url: dataUrl }),
     }).catch(function () {});

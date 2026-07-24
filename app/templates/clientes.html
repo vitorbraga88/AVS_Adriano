@@ -3,7 +3,7 @@
 {% block content %}
 <h1>Clientes</h1>
 
-<form method="get" action="/clientes" class="row">
+<form method="get" action="clientes" class="row">
   <div>
     <label for="q">Buscar</label>
     <input type="text" id="q" name="q" value="{{ q }}" placeholder="Nome ou telefone">
@@ -15,7 +15,7 @@
 
 <div class="card">
   <h3>Novo cliente</h3>
-  <form method="post" action="/clientes">
+  <form method="post" action="clientes">
     <div class="row">
       <div>
         <label for="nome">Nome</label>
@@ -56,7 +56,7 @@
         <td class="mono">{{ c.telefone or '—' }}</td>
         <td>{{ c.endereco or '—' }}</td>
         <td>{{ c.email or '—' }}</td>
-        <td class="num"><a class="btn sec sm" href="/clientes/{{ c.id }}/editar">Editar</a></td>
+        <td class="num"><a class="btn sec sm" href="clientes/{{ c.id }}/editar">Editar</a></td>
       </tr>
     {% endfor %}
     </tbody>

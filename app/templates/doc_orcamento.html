@@ -1,0 +1,91 @@
+{% extends "doc_base.html" %}
+{% block sheet %}
+<article class="sheet active" id="doc-orcamento">
+
+  <header class="doc-head">
+    <svg class="head-bolt" viewBox="0 0 90 120" aria-hidden="true">
+      <polygon fill="#F5A81C" points="52,0 20,58 40,58 12,120 82,44 55,44 88,0"/>
+    </svg>
+    <img class="head-logo" src="{{ logo_uri }}" alt="AVS Soluções Elétricas">
+    <div class="head-id">
+      <p class="head-eyebrow">AVS Soluções Elétricas</p>
+      <h1 class="head-title">Orçamento</h1>
+    </div>
+    <div class="head-badges">
+      <div class="badge"><small>Orçamento nº</small><b>{{ numero }}</b></div>
+      <div class="badge"><small>Emitido em</small><b>{{ data_emissao }}</b></div>
+    </div>
+    <svg class="zigzag" viewBox="0 0 2100 30" preserveAspectRatio="none" aria-hidden="true">
+      <polygon fill="#F5A81C" points="0,30 0,16 860,16 902,2 946,23 990,6 1034,26 1076,9 1112,16 2100,16 2100,30"/>
+    </svg>
+  </header>
+
+  <div class="doc-body">
+
+    <section class="meta">
+      <div class="cell w2"><small>Cliente</small><b>{{ cliente_nome }}</b></div>
+      <div class="cell"><small>Telefone</small><b>{{ cliente_telefone or "—" }}</b></div>
+      <div class="cell"><small>Tipo de serviço</small><b>{{ tipo or "—" }}</b></div>
+      <div class="cell w2"><small>Endereço</small><b>{{ cliente_endereco or "—" }}</b></div>
+      <div class="cell"><small>Local</small><b>{{ local or "—" }}</b></div>
+      <div class="cell"><small>Validade da proposta</small><b>{{ validade or "—" }}</b></div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-title"><h2>Itens</h2></div>
+      <table class="itens">
+        <thead>
+          <tr>
+            <th style="width:52%">Descrição</th>
+            <th class="qtd" style="width:12%">Qtd</th>
+            <th class="num" style="width:18%">Unit.</th>
+            <th class="num" style="width:18%">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for it in itens %}
+          <tr>
+            <td>{{ it.descricao }}</td>
+            <td class="qtd">{{ it.qtd_txt }}</td>
+            <td class="num">{{ it.unit_txt }}</td>
+            <td class="num">{{ it.sub_txt }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="totais">
+        <div class="totais-box">
+          <div class="tot-line"><small>Subtotal</small><span>{{ subtotal_txt }}</span></div>
+          {% if desc_pct %}<div class="tot-line"><small>Desconto ({{ desc_pct }}%)</small><span>− {{ desconto_txt }}</span></div>{% endif %}
+          <div class="tot-total"><small>Total</small><b>{{ total_txt }}</b></div>
+        </div>
+      </div>
+    </section>
+
+    {% if observacoes %}
+    <section class="sec">
+      <div class="sec-title"><h2>Observações</h2></div>
+      <div class="nota">{{ observacoes }}</div>
+    </section>
+    {% endif %}
+
+    {% if fotos %}
+    <section class="sec">
+      <div class="sec-title"><h2>Registro fotográfico</h2><span class="sec-count">{{ fotos_count }}</span></div>
+      <div class="fotos-grid">
+        {% for f in fotos %}
+        <figure class="foto">
+          <img class="ph" src="{{ f.data }}" alt="">
+          <figcaption><span class="ph-num">{{ f.num }}</span><span class="ph-cap">{{ f.legenda }}</span></figcaption>
+        </figure>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+  </div>
+
+  {% include "_doc_footer.html" %}
+</article>
+{% endblock %}

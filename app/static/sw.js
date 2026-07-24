@@ -19,7 +19,7 @@ self.addEventListener("fetch", function (e) {
   var req = e.request;
   if (req.method !== "GET") return;
   var url = new URL(req.url);
-  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/relatorios/")) return;
+  if (url.pathname.indexOf("/api/") !== -1 || url.pathname.indexOf("/relatorios/") !== -1) return;
   if (url.origin !== self.location.origin) return; // deixa CDNs seguirem o padrão do browser
 
   e.respondWith(

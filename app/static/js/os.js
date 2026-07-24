@@ -63,41 +63,33 @@ window.AVS = window.AVS || {};
     var preenchidos = dados.blocos.filter(function (b) { return b.conteudo; });
     if (!preenchidos.length) { UI.toast("Preencha ao menos um bloco", true); return; }
 
-    btn.disabled = true; btn.textContent = "Gerando PDF…";
-    var filename = AVS.Pdf.buildPdfFilename("os", ordem.cliente && ordem.cliente.nome, ordem.numero);
-    AVS.Pdf.gerarBlob("os", dados).then(function (b64) {
-      // memória de assinatura por nome
-      if (dados.assinaturas.cliente && dados.cliente && dados.cliente.nome)
-        AVS.Signature.saveMemory(dados.cliente.nome, dados.assinaturas.cliente);
-      if (dados.assinaturas.tecnico && dados.tecnico)
-        AVS.Signature.saveMemory(dados.tecnico, dados.assinaturas.tecnico);
+    btn.disabled = true; btn.textContent = "Enviando…";
+    if (dados.assinaturas.cliente && dados.cliente && dados.cliente.nome)
+      AVS.Signature.saveMemory(dados.cliente.nome, dados.assinaturas.cliente);
+    if (dados.assinaturas.tecnico && dados.tecnico)
+      AVS.Signature.saveMemory(dados.tecnico, dados.assinaturas.tecnico);
 
-      var payload = {
-        ordem_id: ordem.id,
-        blocos: dados.blocos,
-        fotos: dados.fotos,
-        assinaturas: dados.assinaturas,
-        pdf_base64: b64, pdf_filename: filename,
-      };
-      btn.textContent = "Enviando…";
-      return fetch("/api/os/finalizar", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }).then(function (r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      }).then(function () {
-        UI.toast("Relatório enviado ⚡");
-        setTimeout(function () { window.location = "/os/" + ordem.id; }, 900);
-      }).catch(function () {
-        AVS.Offline.saveDraft("os", "/api/os/finalizar", payload).then(function () {
-          UI.toast("Sem conexão — salvo como rascunho", true);
-          btn.disabled = false; btn.textContent = "⚡ Gerar relatório e enviar";
-        });
+    var payload = {
+      ordem_id: ordem.id,
+      tecnico: dados.tecnico,
+      blocos: dados.blocos,
+      fotos: dados.fotos,
+      assinaturas: dados.assinaturas,
+    };
+    fetch("api/os/finalizar", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(function () {
+      UI.toast("Relatório enviado ⚡");
+      setTimeout(function () { window.location = "os/" + ordem.id; }, 900);
+    }).catch(function () {
+      AVS.Offline.saveDraft("os", "api/os/finalizar", payload).then(function () {
+        UI.toast("Sem conexão — salvo como rascunho", true);
+        btn.disabled = false; btn.textContent = "⚡ Gerar relatório e enviar";
       });
-    }).catch(function (e) {
-      UI.toast("Falha ao gerar PDF: " + e.message, true);
-      btn.disabled = false; btn.textContent = "⚡ Gerar relatório e enviar";
     });
   }
 
@@ -115,7 +107,7 @@ window.AVS = window.AVS || {};
     el("f-tecnico").addEventListener("change", function () {
       var nome = this.value.trim();
       if (!nome) return;
-      fetch("/api/assinatura?nome=" + encodeURIComponent(nome))
+      fetch("api/assinatura?nome=" + encodeURIComponent(nome))
         .then(function (r) { return r.ok ? r.json() : null; })
         .then(function (d) { if (d && d.data_url && padTec.isEmpty()) padTec.load(d.data_url); })
         .catch(function () {});

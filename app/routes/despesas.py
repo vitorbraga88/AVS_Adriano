@@ -11,10 +11,10 @@ from app.models import FinanceiroDespesa
 
 router = APIRouter(tags=["despesas"], dependencies=[Depends(verify_admin)])
 
-# Categorias fixas de despesa operacional (sem vínculo com ordem de serviço —
-# FinanceiroDespesa não tem ordem_id; é custo geral da empresa, não da OS).
+# Categorias de despesa para elétrica
 CATEGORIAS = [
-    "Combustível", "Fardamento", "Ferramentas", "Manutenção carro", "Outros",
+    "material", "ferramenta", "transporte", "combustivel", "mao_de_obra",
+    "impostos", "epi", "terceiros", "outros",
 ]
 
 

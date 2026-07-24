@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Novo orçamento — AVS{% endblock %}
 {% block head %}
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 {% endblock %}
 {% block content %}
 <h1>Novo orçamento</h1>
@@ -80,32 +78,22 @@
   <div class="foto-grid" id="foto-grid"></div>
 </div>
 
-<div class="grid grid-2">
-  <div class="card">
-    <h3>Assinatura do cliente</h3>
-    <canvas class="sigpad" id="sigpad"></canvas>
-    <button type="button" class="btn sec sm" id="sig-clear" style="margin-top:8px">Limpar</button>
-  </div>
-  <div class="card">
-    <h3>Assinatura da empresa</h3>
-    <label>Assinante</label>
-    <input id="f-empresa-nome" value="AVS - Elétrica">
-    <canvas class="sigpad" id="sig-empresa"></canvas>
-    <button type="button" class="btn sec sm" id="sig-empresa-clear" style="margin-top:8px">Limpar</button>
-  </div>
+<div class="card">
+  <h3>Assinatura do cliente</h3>
+  <canvas class="sigpad" id="sigpad"></canvas>
+  <button type="button" class="btn sec sm" id="sig-clear" style="margin-top:8px">Limpar</button>
 </div>
 
 <div class="actions">
   <button type="button" class="btn" id="btn-finalizar">⚡ Finalizar e enviar</button>
-  <a class="btn sec" href="/orcamentos">Cancelar</a>
+  <a class="btn sec" href="orcamentos">Cancelar</a>
 </div>
 {% endblock %}
 {% block scripts %}
-<script src="/static/js/validation.js"></script>
-<script src="/static/js/signature.js"></script>
-<script src="/static/js/camera.js"></script>
-<script src="/static/js/offline.js"></script>
-<script src="/static/js/voice.js"></script>
-<script src="/static/js/pdf.js"></script>
-<script src="/static/js/orcamento.js"></script>
+<script src="static/js/validation.js"></script>
+<script src="static/js/signature.js"></script>
+<script src="static/js/camera.js"></script>
+<script src="static/js/offline.js"></script>
+<script src="static/js/voice.js"></script>
+<script src="static/js/orcamento.js"></script>
 {% endblock %}

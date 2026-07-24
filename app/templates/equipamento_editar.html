@@ -4,7 +4,7 @@
 <h1>Editar equipamento</h1>
 
 <div class="card">
-  <form method="post" action="/equipamentos/{{ e.id }}">
+  <form method="post" action="equipamentos/{{ e.id }}">
     <div class="row">
       <div>
         <label for="cliente_id">Cliente</label>
@@ -43,7 +43,7 @@
     <textarea id="observacoes" name="observacoes">{{ e.observacoes or '' }}</textarea>
     <div class="actions">
       <button type="submit" class="btn">&#9889; Salvar</button>
-      <a class="btn sec" href="/equipamentos">Cancelar</a>
+      <a class="btn sec" href="equipamentos">Cancelar</a>
     </div>
   </form>
 </div>

@@ -15,7 +15,7 @@
     <tbody>
     {% for o in ordens %}
       <tr>
-        <td><a href="/os/{{ o.id }}" class="mono">{{ o.numero }}</a></td>
+        <td><a href="os/{{ o.id }}" class="mono">{{ o.numero }}</a></td>
         <td>{{ o.cliente.nome if o.cliente else '—' }}</td>
         <td>{{ o.titulo or '—' }}</td>
         <td><span class="badge {{ rota_status[o.status] }}">{{ status_label[o.status] }}</span></td>
@@ -28,7 +28,4 @@
   <p class="muted">Nenhuma ordem de serviço.</p>
   {% endif %}
 </div>
-{% endblock %}
-{% block fab %}
-<a class="btn fab" href="/os/novo">&#9889; Gerar Relatório de Serviço</a>
 {% endblock %}

@@ -70,14 +70,14 @@
   </table>
   {% if o.orcamento_pdf_url %}
   <div class="actions">
-    <a class="btn sec sm" href="{{ o.orcamento_pdf_url }}" target="_blank">Abrir PDF</a>
+    <a class="btn sec sm" href="{{ o.orcamento_pdf_url.lstrip('/') }}" target="_blank">Abrir PDF</a>
   </div>
   {% endif %}
 </div>
 
 <div class="card">
   <h3>Agendamento</h3>
-  <form method="post" action="/orcamentos/{{ o.id }}/agendar">
+  <form method="post" action="orcamentos/{{ o.id }}/agendar">
     <label for="data_servico">Data do serviço</label>
     <input type="datetime-local" id="data_servico" name="data_servico"
            value="{{ o.data_servico.strftime('%Y-%m-%dT%H:%M') if o.data_servico else '' }}">
@@ -92,13 +92,13 @@
   <h3>Ações</h3>
   <div class="actions">
     {% for dest, label in transicoes.items() %}
-    <form method="post" action="/orcamentos/{{ o.id }}/status">
+    <form method="post" action="orcamentos/{{ o.id }}/status">
       <input type="hidden" name="status" value="{{ dest }}">
       <button class="btn sm" type="submit">{{ label }}</button>
     </form>
     {% endfor %}
     {% if o.status in ['aprovado', 'em_execucao', 'concluido', 'recebido'] %}
-    <a class="btn sec sm" href="/os/{{ o.id }}">Ver OS</a>
+    <a class="btn sec sm" href="os/{{ o.id }}">Ver OS</a>
     {% endif %}
   </div>
 </div>

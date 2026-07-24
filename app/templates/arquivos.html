@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ titulo }} — AVS</title>
+<style>
+:root{--preto:#141414;--grafite:#242424;--amarelo:#F5A81C;--linha:#2e2e2e;--mudo:#9a9a9a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--preto);color:#eee;font-family:"Segoe UI",system-ui,Arial,sans-serif}
+header{background:linear-gradient(120deg,#101010,#242424);border-bottom:3px solid var(--amarelo);padding:20px 18px}
+header h1{margin:0;font-size:22px;letter-spacing:.02em}
+header .avs{color:var(--amarelo);font-weight:800;letter-spacing:.06em;font-size:13px;text-transform:uppercase}
+.bar{display:flex;flex-wrap:wrap;gap:10px;padding:16px 18px}
+.btn{display:inline-block;text-decoration:none;font-weight:700;font-size:14px;border-radius:8px;padding:10px 16px;transition:.15s}
+.btn-y{background:var(--amarelo);color:var(--preto);box-shadow:2px 2px 0 #000}
+.btn-y:hover{filter:brightness(1.08)}
+.btn-o{background:var(--grafite);color:#eee;border:1px solid #3a3a3a}
+.btn-o:hover{border-color:var(--amarelo)}
+main{padding:4px 18px 40px}
+.lista{list-style:none;margin:0;padding:0;border:1px solid var(--linha);border-radius:10px;overflow:hidden}
+.lista li{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--linha)}
+.lista li:last-child{border-bottom:none}
+.lista li:nth-child(even){background:#1b1b1b}
+.doc{flex:1;min-width:0}
+.doc a{color:#fff;text-decoration:none;font-weight:600;font-size:15px;word-break:break-word}
+.doc a:hover{color:var(--amarelo)}
+.doc small{display:block;color:var(--mudo);font-size:12px;margin-top:3px}
+.abrir{flex:0 0 auto;background:var(--amarelo);color:var(--preto);font-weight:700;font-size:13px;text-decoration:none;border-radius:7px;padding:8px 14px}
+.vazio{color:var(--mudo);padding:30px 4px;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <div class="avs">AVS Soluções Elétricas</div>
+  <h1>{{ titulo }}</h1>
+</header>
+<div class="bar">
+  <a class="btn btn-y" href="{{ app_url }}">🌐 Abrir aplicação</a>
+  <a class="btn btn-o" href="{{ outro_url }}">📁 {{ outro_titulo }}</a>
+</div>
+<main>
+  {% if arquivos %}
+  <ul class="lista">
+    {% for a in arquivos %}
+    <li>
+      <div class="doc">
+        <a href="{{ a.url }}" target="_blank" rel="noopener">{{ a.nome }}</a>
+        <small>{{ a.data }} · {{ a.tamanho }}</small>
+      </div>
+      <a class="abrir" href="{{ a.url }}" target="_blank" rel="noopener">Abrir PDF</a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="vazio">Nenhum documento nesta pasta ainda.</p>
+  {% endif %}
+</main>
+</body>
+</html>

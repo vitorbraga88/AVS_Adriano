@@ -107,17 +107,6 @@ def _proximo_numero(db: Session) -> str:
     return f"{prefixo}{seq:03d}"
 
 
-def _proximo_numero_os(db: Session) -> str:
-    """OS-AAAAMMDD-NNN — OS aberta diretamente, sem orçamento prévio."""
-    hoje = datetime.now(TZ_RECIFE).strftime("%Y%m%d")
-    prefixo = f"OS-{hoje}-"
-    ultimo = (db.query(Ordem)
-              .filter(Ordem.numero.like(f"{prefixo}%"))
-              .order_by(Ordem.numero.desc()).first())
-    seq = int(ultimo.numero.rsplit("-", 1)[1]) + 1 if ultimo else 1
-    return f"{prefixo}{seq:03d}"
-
-
 def _calc_total(itens: list[dict], desconto_pct: Decimal) -> int:
     bruto = sum(int(i["preco_centavos"]) * int(i.get("quantidade", 1)) for i in itens)
     return int(Decimal(bruto) * (Decimal("1") - desconto_pct / Decimal("100")))
@@ -200,57 +189,6 @@ def criar_orcamento(
         "cliente_id": cliente.id,
         "equipamento_id": equipamento_id,
     }
-
-
-def criar_os_direta(
-    db: Session,
-    cliente_nome: str,
-    cliente_telefone: str | None = None,
-    cliente_endereco: str | None = None,
-    equipamento: dict | None = None,
-    titulo: str | None = None,
-    tipo: str | None = None,
-    prioridade: str = "normal",
-    local_servico: str | None = None,
-    data_servico: datetime | None = None,
-) -> dict:
-    """Abre uma OS diretamente em 'aprovado', sem orçamento prévio (ex.:
-    urgência/manutenção corretiva sem cotação formal). Sem itens/valor —
-    o técnico preenche o relatório em seguida (/os/{id}/relatorio)."""
-    cliente = upsert_cliente(db, cliente_nome, cliente_telefone, cliente_endereco)
-
-    equipamento_id = None
-    if equipamento:
-        temdados = any((equipamento or {}).get(k) for k in
-                       ("descricao", "marca", "modelo", "numero_serie", "patrimonio"))
-        if equipamento.get("id"):
-            equipamento_id = int(equipamento["id"])
-        elif temdados:
-            equipamento_id = upsert_equipamento(
-                db, cliente.id,
-                descricao=equipamento.get("descricao"),
-                marca=equipamento.get("marca"), modelo=equipamento.get("modelo"),
-                numero_serie=equipamento.get("numero_serie"),
-                patrimonio=equipamento.get("patrimonio"),
-            )
-
-    ordem = Ordem(
-        numero=_proximo_numero_os(db),
-        cliente_id=cliente.id,
-        equipamento_id=equipamento_id,
-        status="aprovado",
-        titulo=(titulo or "").strip() or None,
-        tipo=(tipo or "").strip() or None,
-        prioridade=prioridade or "normal",
-        local_servico=(local_servico or "").strip() or None,
-        total_centavos=0,
-        data_servico=data_servico,
-        canal="web",
-    )
-    db.add(ordem)
-    db.commit()
-    db.refresh(ordem)
-    return {"ordem_id": ordem.id, "numero": ordem.numero, "cliente_id": cliente.id}
 
 
 def atualizar_orcamento(db: Session, ordem_id: int, itens: list[dict] | None = None,
@@ -355,8 +293,9 @@ def add_custo(db: Session, ordem_id: int, descricao: str, valor_centavos: int,
     db.commit()
 
 
-def atualizar_relatorio(db: Session, ordem_id: int, blocos, fotos, assinaturas) -> dict:
-    """Grava o relatório da OS (blocos + fotos + assinaturas) em relatorio_json."""
+def atualizar_relatorio(db: Session, ordem_id: int, blocos, fotos, assinaturas,
+                        tecnico=None) -> dict:
+    """Grava o relatório da OS (blocos + fotos + assinaturas + técnico)."""
     ordem = db.query(Ordem).filter(Ordem.id == ordem_id).first()
     if ordem is None:
         raise ValueError(f"Ordem {ordem_id} não encontrada")
@@ -364,6 +303,7 @@ def atualizar_relatorio(db: Session, ordem_id: int, blocos, fotos, assinaturas) 
         "blocos": blocos or [],
         "fotos": fotos or [],
         "assinaturas": assinaturas or {},
+        "tecnico": (tecnico or "").strip() or None,
     }
     db.commit()
     return {"ordem_id": ordem.id, "numero": ordem.numero}

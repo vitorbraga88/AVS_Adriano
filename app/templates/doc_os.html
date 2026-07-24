@@ -1,0 +1,88 @@
+{% extends "doc_base.html" %}
+{% block sheet %}
+<article class="sheet active" id="doc-relatorio">
+
+  <header class="doc-head">
+    <svg class="head-bolt" viewBox="0 0 90 120" aria-hidden="true">
+      <polygon fill="#F5A81C" points="52,0 20,58 40,58 12,120 82,44 55,44 88,0"/>
+    </svg>
+    <img class="head-logo" src="{{ logo_uri }}" alt="AVS Soluções Elétricas">
+    <div class="head-id">
+      <p class="head-eyebrow">AVS Soluções Elétricas</p>
+      <h1 class="head-title">Relatório<br>de Serviço</h1>
+    </div>
+    <div class="head-badges">
+      <div class="badge"><small>OS — ref. orçamento</small><b>{{ numero }}</b></div>
+      <div class="badge"><small>Data do serviço</small><b>{{ data_servico }}</b></div>
+    </div>
+    <svg class="zigzag" viewBox="0 0 2100 30" preserveAspectRatio="none" aria-hidden="true">
+      <polygon fill="#F5A81C" points="0,30 0,16 860,16 902,2 946,23 990,6 1034,26 1076,9 1112,16 2100,16 2100,30"/>
+    </svg>
+  </header>
+
+  <div class="doc-body">
+
+    <section class="meta">
+      <div class="cell w2"><small>Cliente</small><b>{{ cliente_nome }}</b></div>
+      <div class="cell"><small>Técnico responsável</small><b>{{ tecnico or "—" }}</b></div>
+      <div class="cell"><small>Status</small><span class="pill">{{ status_label }}</span></div>
+      <div class="cell w2"><small>Serviço</small><b>{{ servico or "—" }}</b></div>
+      <div class="cell w2"><small>Local</small><b>{{ local or "—" }}</b></div>
+    </section>
+
+    {% for b in blocos_desc %}
+    <section class="sec">
+      <div class="sec-title"><h2>{{ b.titulo }}</h2></div>
+      <p class="texto">{{ b.conteudo }}</p>
+    </section>
+    {% endfor %}
+
+    {% if blocos_duo %}
+    <section class="sec duo">
+      {% for b in blocos_duo %}
+      <div class="mini-card">
+        <h3>{{ b.titulo }}</h3>
+        <p>{{ b.conteudo }}</p>
+      </div>
+      {% endfor %}
+    </section>
+    {% endif %}
+
+    {% for b in blocos_nota %}
+    <section class="sec">
+      <div class="sec-title"><h2>{{ b.titulo }}</h2></div>
+      <div class="nota">{{ b.conteudo }}</div>
+    </section>
+    {% endfor %}
+
+    {% for b in blocos_extra %}
+    <section class="sec">
+      <div class="sec-title"><h2>{{ b.titulo }}</h2></div>
+      <p class="texto">{{ b.conteudo }}</p>
+    </section>
+    {% endfor %}
+
+    {% if fotos %}
+    <section class="sec">
+      <div class="sec-title"><h2>Relatório fotográfico</h2><span class="sec-count">{{ fotos_count }}</span></div>
+      <div class="fotos-grid">
+        {% for f in fotos %}
+        <figure class="foto">
+          <img class="ph" src="{{ f.data }}" alt="">
+          <figcaption><span class="ph-num">{{ f.num }}</span><span class="ph-cap">{{ f.legenda }}</span></figcaption>
+        </figure>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="assin">
+      <div class="campo"><div class="traco">{% if sig_cliente %}<img src="{{ sig_cliente }}" alt="">{% endif %}</div><p><span>Cliente — </span>{{ cliente_nome }}</p></div>
+      <div class="campo"><div class="traco">{% if sig_tecnico %}<img src="{{ sig_tecnico }}" alt="">{% endif %}</div><p><span>Técnico — </span>{{ tecnico or "—" }}</p></div>
+    </section>
+
+  </div>
+
+  {% include "_doc_footer.html" %}
+</article>
+{% endblock %}

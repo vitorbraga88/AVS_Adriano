@@ -1,8 +1,8 @@
 """Endpoints JSON (sem same-origin): consumidos pelo JS dos formulários de
 campo e, potencialmente, pelo n8n. Auth Basic ainda se aplica.
 """
-import base64
-import binascii
+import logging
+import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -12,13 +12,15 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.auth import verify_admin
 from app.deps import get_db
-from app.models import Assinatura, Cliente, Equipamento, Ordem, Sugestao
-from app.services.notificacoes import notificar_n8n
-from app.services.ordens import (
-    atualizar_orcamento, atualizar_relatorio, criar_orcamento, criar_os_direta,
-)
+from app.models import Assinatura, Cliente, Equipamento, Notificacao, Ordem, Sugestao
+from app.services.telegram_notify import notificar_telegram
+from app.services.ordens import atualizar_orcamento, atualizar_relatorio, criar_orcamento
+from app.services.documento_html import build_orcamento, build_os
+from app.services.pdf_render import render_pdf
 
 router = APIRouter(prefix="/api", tags=["api"], dependencies=[Depends(verify_admin)])
+
+log = logging.getLogger("avs.api")
 
 REL_DIR = Path(__file__).parent.parent.parent / "relatorios"
 REL_DIR.mkdir(parents=True, exist_ok=True)
@@ -26,17 +28,14 @@ REL_DIR.mkdir(parents=True, exist_ok=True)
 SAFE_FILENAME = re.compile(r"^[^/\\\x00-\x1f]+\.pdf$")
 
 
-def _save_pdf(pdf_base64: str, filename: str) -> str:
-    """Valida o nome, decodifica o base64 e grava em relatorios/. Retorna o nome."""
+def _save_pdf_bytes(pdf_bytes: bytes, filename: str, sub: str) -> str:
+    """Valida o nome e grava os bytes em relatorios/<sub>/. Retorna a URL pública."""
     if not filename or not SAFE_FILENAME.match(filename):
         raise HTTPException(status_code=422, detail="Nome de arquivo inválido")
-    data = pdf_base64.split(",", 1)[-1] if "," in pdf_base64 else pdf_base64
-    try:
-        raw = base64.b64decode(data, validate=True)
-    except (binascii.Error, ValueError):
-        raise HTTPException(status_code=422, detail="PDF base64 inválido")
-    (REL_DIR / filename).write_bytes(raw)
-    return filename
+    dest = REL_DIR / sub
+    dest.mkdir(parents=True, exist_ok=True)
+    (dest / filename).write_bytes(pdf_bytes)
+    return f"/relatorios/{sub}/{filename}"
 
 
 def _itens_from_body(body: dict) -> list[dict]:
@@ -90,17 +89,19 @@ def finalizar_orcamento(body: dict = Body(...), db: Session = Depends(get_db)):
     ordem = (db.query(Ordem).options(joinedload(Ordem.cliente))
              .filter(Ordem.id == res["ordem_id"]).first())
 
-    pdf_url = None
-    filename = body.get("pdf_filename")
-    if body.get("pdf_base64") and filename:
-        _save_pdf(body["pdf_base64"], filename)
-        pdf_url = f"/relatorios/{filename}"
+    pdf_url, pdf_bytes, filename = None, None, None
+    try:
+        html, filename = build_orcamento(ordem)
+        pdf_bytes = render_pdf(html)
+        pdf_url = _save_pdf_bytes(pdf_bytes, filename, "orcamentos")
         ordem.orcamento_pdf_url = pdf_url
         db.commit()
+    except Exception:
+        log.exception("falha ao gerar PDF do orçamento %s", ordem.id)
+        pdf_bytes, filename = None, None
 
     resumo = _resumo_ordem(ordem)
-    notificar_n8n(db, "orcamento", ordem, resumo,
-                  body.get("pdf_base64"), filename)
+    _entregar_telegram(db, ordem, resumo, "orcamentos", pdf_bytes, filename)
 
     return {"ok": True, "ordem_id": ordem.id, "numero": ordem.numero, "pdf_url": pdf_url}
 
@@ -115,50 +116,44 @@ def finalizar_os(body: dict = Body(...), db: Session = Depends(get_db)):
         blocos=body.get("blocos") or [],
         fotos=body.get("fotos") or [],
         assinaturas=body.get("assinaturas") or {},
+        tecnico=body.get("tecnico"),
     )
     ordem = (db.query(Ordem).options(joinedload(Ordem.cliente))
              .filter(Ordem.id == int(ordem_id)).first())
     if not ordem:
         raise HTTPException(status_code=404, detail="Ordem não encontrada")
 
-    pdf_url = None
-    filename = body.get("pdf_filename")
-    if body.get("pdf_base64") and filename:
-        _save_pdf(body["pdf_base64"], filename)
-        pdf_url = f"/relatorios/{filename}"
+    pdf_url, pdf_bytes, filename = None, None, None
+    try:
+        html, filename = build_os(ordem)
+        pdf_bytes = render_pdf(html)
+        pdf_url = _save_pdf_bytes(pdf_bytes, filename, "os")
         ordem.os_pdf_url = pdf_url
         db.commit()
+    except Exception:
+        log.exception("falha ao gerar PDF da OS %s", ordem.id)
+        pdf_bytes, filename = None, None
 
     resumo = _resumo_ordem(ordem, "OS")
-    notificar_n8n(db, "os", ordem, resumo, body.get("pdf_base64"), filename)
+    _entregar_telegram(db, ordem, resumo, "os", pdf_bytes, filename)
     return {"ok": True, "ordem_id": ordem.id, "pdf_url": pdf_url}
 
 
-@router.post("/os/criar")
-def criar_os(body: dict = Body(...), db: Session = Depends(get_db)):
-    """Abre uma OS direta (sem orçamento prévio) e devolve o id para o
-    técnico seguir direto ao relatório de serviço."""
-    cliente = body.get("cliente") or {}
-    equipamento = body.get("equipamento") or None
-    data_servico = None
-    if body.get("data_servico"):
+def _entregar_telegram(db: Session, ordem: Ordem, resumo: str, kind: str,
+                       pdf_bytes: bytes | None, filename: str | None) -> None:
+    """Envia resumo + PDF (bytes) direto ao Telegram (dono repassa ao cliente).
+
+    Registra em `notificacoes` quando entregue. Nunca derruba a finalização.
+    """
+    base = os.getenv("PUBLIC_BASE_URL", "").rstrip("/")
+    texto = f"{resumo}\n\n{base}/{kind}/{ordem.id}" if base else resumo
+    if notificar_telegram(texto, pdf_bytes, filename):
         try:
-            data_servico = datetime.fromisoformat(body["data_servico"])
-        except ValueError:
-            pass
-    res = criar_os_direta(
-        db,
-        cliente_nome=cliente.get("nome") or "Cliente",
-        cliente_telefone=cliente.get("telefone"),
-        cliente_endereco=cliente.get("endereco"),
-        equipamento=equipamento,
-        titulo=body.get("titulo"),
-        tipo=body.get("tipo"),
-        prioridade=body.get("prioridade") or "normal",
-        local_servico=body.get("local_servico"),
-        data_servico=data_servico,
-    )
-    return {"ok": True, "ordem_id": res["ordem_id"], "numero": res["numero"]}
+            db.add(Notificacao(ordem_id=ordem.id, tipo=kind,
+                               chat_id=os.getenv("TELEGRAM_CHAT_IDS", "") or None))
+            db.commit()
+        except Exception:
+            db.rollback()
 
 
 def _resumo_ordem(ordem: Ordem, prefixo: str = "Orçamento") -> str:

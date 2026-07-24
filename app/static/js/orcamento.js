@@ -4,7 +4,7 @@ window.AVS = window.AVS || {};
   "use strict";
   var UI = AVS.UI;
 
-  var itensEl, totalEl, descEl, cam, pad, padEmpresa, camposCliente = {};
+  var itensEl, totalEl, descEl, cam, pad, camposCliente = {};
 
   function el(id) { return document.getElementById(id); }
 
@@ -92,8 +92,6 @@ window.AVS = window.AVS || {};
       validade_txt: validadeTxt(),
       fotos: cam.getPhotos(),
       assinatura: pad.toDataURL(),
-      assinatura_empresa: padEmpresa.toDataURL(),
-      empresa_nome: el("f-empresa-nome").value.trim(),
     };
   }
 
@@ -101,7 +99,7 @@ window.AVS = window.AVS || {};
     var sel = el("eq-select");
     sel.innerHTML = "<option value=''>— novo equipamento —</option>";
     if (!clienteId) return;
-    fetch("/api/equipamentos?cliente_id=" + encodeURIComponent(clienteId))
+    fetch("api/equipamentos?cliente_id=" + encodeURIComponent(clienteId))
       .then(function (r) { return r.ok ? r.json() : []; })
       .then(function (list) {
         list.forEach(function (e) {
@@ -131,7 +129,7 @@ window.AVS = window.AVS || {};
       }
       el("f-cliente-id").value = "";
       if (q.length < 2) return;
-      fetch("/api/clientes?q=" + encodeURIComponent(q))
+      fetch("api/clientes?q=" + encodeURIComponent(q))
         .then(function (r) { return r.ok ? r.json() : []; })
         .then(function (list) {
           dl.innerHTML = "";
@@ -153,37 +151,24 @@ window.AVS = window.AVS || {};
     var dados = coletarDados();
     if (!dados.itens.length) { UI.toast("Adicione ao menos um item", true); return; }
 
-    btn.disabled = true; btn.textContent = "Gerando PDF…";
-    var filename = AVS.Pdf.buildPdfFilename("orcamento", dados.cliente.nome, "");
-    AVS.Pdf.gerarBlob("orcamento", dados).then(function (b64) {
-      var payload = Object.assign({}, dados, { pdf_base64: b64, pdf_filename: filename });
-      // salva assinaturas na memória por nome (cliente e empresa)
-      if (dados.assinatura && dados.cliente.nome) {
-        AVS.Signature.saveMemory(dados.cliente.nome, dados.assinatura);
-      }
-      if (dados.assinatura_empresa && dados.empresa_nome) {
-        AVS.Signature.saveMemory(dados.empresa_nome, dados.assinatura_empresa);
-      }
-      btn.textContent = "Enviando…";
-      return fetch("/api/orcamentos/finalizar", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }).then(function (r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      }).then(function (res) {
-        UI.toast("Orçamento " + (res.numero || "") + " enviado ⚡");
-        setTimeout(function () { window.location = "/orcamentos/" + res.ordem_id; }, 900);
-      }).catch(function () {
-        // offline / falha: guarda rascunho para sincronizar depois
-        AVS.Offline.saveDraft("orcamento", "/api/orcamentos/finalizar", payload).then(function () {
-          UI.toast("Sem conexão — salvo como rascunho, será enviado ao reconectar", true);
-          btn.disabled = false; btn.textContent = "⚡ Finalizar e enviar";
-        });
+    btn.disabled = true; btn.textContent = "Enviando…";
+    if (dados.assinatura && dados.cliente.nome) {
+      AVS.Signature.saveMemory(dados.cliente.nome, dados.assinatura);
+    }
+    fetch("api/orcamentos/finalizar", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dados),
+    }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(function (res) {
+      UI.toast("Orçamento " + (res.numero || "") + " enviado ⚡");
+      setTimeout(function () { window.location = "orcamentos/" + res.ordem_id; }, 900);
+    }).catch(function () {
+      AVS.Offline.saveDraft("orcamento", "api/orcamentos/finalizar", dados).then(function () {
+        UI.toast("Sem conexão — salvo como rascunho, será enviado ao reconectar", true);
+        btn.disabled = false; btn.textContent = "⚡ Finalizar e enviar";
       });
-    }).catch(function (e) {
-      UI.toast("Falha ao gerar PDF: " + e.message, true);
-      btn.disabled = false; btn.textContent = "⚡ Finalizar e enviar";
     });
   }
 
@@ -214,13 +199,6 @@ window.AVS = window.AVS || {};
     cam = AVS.Camera.create(el("foto-input"), el("foto-grid"));
     pad = AVS.Signature.attach(el("sigpad"), el("f-nome"));
     el("sig-clear").addEventListener("click", function () { pad.clear(); });
-    padEmpresa = AVS.Signature.attach(el("sig-empresa"), el("f-empresa-nome"));
-    el("sig-empresa-clear").addEventListener("click", function () { padEmpresa.clear(); });
-    // carrega assinatura salva da empresa (valor padrão já preenchido)
-    fetch("/api/assinatura?nome=" + encodeURIComponent(el("f-empresa-nome").value.trim()))
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (d) { if (d && d.data_url) padEmpresa.load(d.data_url); })
-      .catch(function () {});
     AVS.Voice.attach(el("voz-obs"), el("f-observacoes"));
     bindClienteAutocomplete();
     AVS.Offline.monitorConnectivity();

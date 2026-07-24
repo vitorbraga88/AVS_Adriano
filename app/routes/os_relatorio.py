@@ -28,11 +28,6 @@ def lista_os(request: Request, db: Session = Depends(get_db)):
     })
 
 
-@router.get("/os/novo")
-def novo_os(request: Request, db: Session = Depends(get_db)):
-    return templates.TemplateResponse(request, "os_novo.html", {})
-
-
 @router.get("/os/{ordem_id}")
 def detalhe_os(ordem_id: int, request: Request, db: Session = Depends(get_db)):
     ordem = (db.query(Ordem)

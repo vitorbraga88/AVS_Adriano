@@ -87,7 +87,7 @@ app.add_middleware(
 )
 
 from app.routes import (  # noqa: E402
-    agenda, api, clientes, dashboard, despesas,
+    agenda, api, arquivos, clientes, dashboard, despesas,
     equipamentos, financeiro, orcamentos, os_relatorio,
 )
 
@@ -100,12 +100,14 @@ app.include_router(despesas.router)
 app.include_router(clientes.router)
 app.include_router(equipamentos.router)
 app.include_router(api.router)
+app.include_router(arquivos.router)
 
 
 @app.exception_handler(StarletteHTTPException)
 async def not_found_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
-        return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
+        from fastapi.responses import JSONResponse
+        return JSONResponse({"detail": "Not found"}, status_code=404)
     return await http_exception_handler(request, exc)
 
 

@@ -4,7 +4,7 @@
 <h1>Editar cliente</h1>
 
 <div class="card">
-  <form method="post" action="/clientes/{{ c.id }}">
+  <form method="post" action="clientes/{{ c.id }}">
     <div class="row">
       <div>
         <label for="nome">Nome</label>
@@ -29,7 +29,7 @@
     <textarea id="observacoes" name="observacoes">{{ c.observacoes or '' }}</textarea>
     <div class="actions">
       <button type="submit" class="btn">&#9889; Salvar</button>
-      <a class="btn sec" href="/clientes">Cancelar</a>
+      <a class="btn sec" href="clientes">Cancelar</a>
     </div>
   </form>
 </div>

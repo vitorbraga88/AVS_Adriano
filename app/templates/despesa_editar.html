@@ -4,7 +4,7 @@
 <h1>Editar despesa</h1>
 
 <div class="card">
-  <form method="post" action="/despesas/{{ d.id }}">
+  <form method="post" action="despesas/{{ d.id }}">
     <div class="row">
       <div>
         <label for="categoria">Categoria</label>
@@ -43,7 +43,7 @@
     <textarea id="observacoes" name="observacoes">{{ d.observacoes or '' }}</textarea>
     <div class="actions">
       <button type="submit" class="btn">&#9889; Salvar</button>
-      <a class="btn sec" href="/despesas">Cancelar</a>
+      <a class="btn sec" href="despesas">Cancelar</a>
     </div>
   </form>
 </div>

@@ -36,9 +36,9 @@
 <div class="card">
   <h3>Relatório</h3>
   <div class="actions">
-    <a class="btn sm" href="/os/{{ o.id }}/relatorio">Editar relatório</a>
+    <a class="btn sm" href="os/{{ o.id }}/relatorio">Editar relatório</a>
     {% if o.os_pdf_url %}
-    <a class="btn sec sm" href="{{ o.os_pdf_url }}" target="_blank">Abrir PDF</a>
+    <a class="btn sec sm" href="{{ o.os_pdf_url.lstrip('/') }}" target="_blank">Abrir PDF</a>
     {% endif %}
   </div>
 </div>
@@ -56,7 +56,7 @@
         <td>{{ c.categoria or '—' }}</td>
         <td class="num mono">{{ c.valor_centavos|brl_c }}</td>
         <td class="num">
-          <form method="post" action="/os/{{ o.id }}/custos/{{ c.id }}/excluir">
+          <form method="post" action="os/{{ o.id }}/custos/{{ c.id }}/excluir">
             <button class="btn danger sm" type="submit">Excluir</button>
           </form>
         </td>
@@ -70,7 +70,7 @@
     </tbody>
   </table>
 
-  <form method="post" action="/os/{{ o.id }}/custos">
+  <form method="post" action="os/{{ o.id }}/custos">
     <div class="row">
       <div>
         <label for="c_descricao">Descrição</label>
@@ -104,7 +104,7 @@
   {% if transicoes %}
   <div class="actions">
     {% for dest, label in transicoes.items() %}
-    <form method="post" action="/os/{{ o.id }}/status">
+    <form method="post" action="os/{{ o.id }}/status">
       <input type="hidden" name="status" value="{{ dest }}">
       <button class="btn sm" type="submit">{{ label }}</button>
     </form>
