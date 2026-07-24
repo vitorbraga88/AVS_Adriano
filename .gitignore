@@ -8,7 +8,8 @@ __pycache__/
 database/*.db
 database/backups/*.db
 
-# PDFs gerados (relatórios/orçamentos) — artefatos de runtime, não fonte
+# PDFs gerados (relatórios/orçamentos e relatorios/os) — artefatos de runtime
+relatorios/**/*.pdf
 relatorios/*.pdf
 
 # Editor / SO
