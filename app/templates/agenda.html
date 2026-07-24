@@ -23,11 +23,18 @@
         {% for dest, label in item.transicoes.items() %}
         <form method="post" action="{{ base }}/{{ item.o.id }}/status">
           <input type="hidden" name="status" value="{{ dest }}">
-          <button class="btn sm" type="submit">{{ label }}</button>
+          <button class="btn sm{% if dest == 'cancelado' %} danger{% endif %}" type="submit">{{ label }}</button>
         </form>
         {% endfor %}
       </div>
       {% endif %}
+      <div class="actions">
+        <form method="post" action="/agenda/{{ item.o.id }}/apagar"
+              onsubmit="return confirm('Apagar {{ item.o.numero }} definitivamente? Essa ação não pode ser desfeita.');">
+          <input type="hidden" name="voltar" value="{{ voltar }}">
+          <button class="btn danger sm" type="submit">Apagar</button>
+        </form>
+      </div>
     </div>
     {% else %}
     <p class="muted">—</p>

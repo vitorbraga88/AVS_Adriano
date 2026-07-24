@@ -17,10 +17,25 @@
     <div class="d{% if d.strftime('%Y-%m') != mes %} out{% endif %}{% if d == hoje %} today{% endif %}">
       <div class="mono">{{ d.day }}</div>
       {% for ev in eventos[d] %}
-      <a class="ev" href="/os/{{ ev.id }}">
-        <span class="mono">{{ ev.data_servico.strftime('%H:%M') }}</span>
-        {{ ev.cliente.nome if ev.cliente else '—' }}
-      </a>
+      <div class="ev-wrap">
+        <a class="ev" href="{{ ev.base }}/{{ ev.o.id }}">
+          <span class="mono">{{ ev.o.data_servico.strftime('%H:%M') }}</span>
+          {{ ev.o.cliente.nome if ev.o.cliente else '—' }}
+        </a>
+        <div class="ev-actions">
+          {% if 'cancelado' in ev.transicoes %}
+          <form method="post" action="{{ ev.base }}/{{ ev.o.id }}/status">
+            <input type="hidden" name="status" value="cancelado">
+            <button type="submit" title="Cancelar (cliente desistiu)">Cancelar</button>
+          </form>
+          {% endif %}
+          <form method="post" action="/agenda/{{ ev.o.id }}/apagar"
+                onsubmit="return confirm('Apagar {{ ev.o.numero }} definitivamente? Essa ação não pode ser desfeita.');">
+            <input type="hidden" name="voltar" value="{{ voltar }}">
+            <button type="submit" title="Apagar (falha)">Apagar</button>
+          </form>
+        </div>
+      </div>
       {% endfor %}
     </div>
     {% endfor %}
