@@ -3,7 +3,7 @@ window.AVS = window.AVS || {};
 (function (AVS) {
   "use strict";
 
-  var MAX_DIM = 1280, QUALITY = 0.7;
+  var MAX_DIM = 1600, QUALITY = 0.82;
 
   function compress(file) {
     return new Promise(function (resolve, reject) {
@@ -46,6 +46,8 @@ window.AVS = window.AVS || {};
     this.grid.innerHTML = "";
     this.photos.forEach(function (p, i) {
       var fig = document.createElement("figure");
+      var num = document.createElement("span");
+      num.className = "num-badge"; num.textContent = String(i + 1);
       var img = document.createElement("img");
       img.src = p.data;
       var cap = document.createElement("input");
@@ -54,7 +56,7 @@ window.AVS = window.AVS || {};
       var rm = document.createElement("button");
       rm.type = "button"; rm.className = "btn danger sm rm"; rm.textContent = "×";
       rm.addEventListener("click", function () { self.photos.splice(i, 1); self.render(); });
-      fig.appendChild(img); fig.appendChild(rm); fig.appendChild(cap);
+      fig.appendChild(img); fig.appendChild(num); fig.appendChild(rm); fig.appendChild(cap);
       self.grid.appendChild(fig);
     });
   };
