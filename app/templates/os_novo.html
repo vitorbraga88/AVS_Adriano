@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Gerar Relatório de Serviço — AVS{% endblock %}
+{% block content %}
+<h1>Gerar Relatório de Serviço</h1>
+<p class="muted mono">Abre uma OS direta, sem orçamento prévio (ex.: urgência, garantia, cortesia).</p>
+
+<div class="card">
+  <h3>Cliente</h3>
+  <div class="row">
+    <div><label>Nome</label><input id="f-nome" list="dl-clientes" autocomplete="off"></div>
+    <div><label>Telefone</label><input id="f-telefone" inputmode="tel"></div>
+  </div>
+  <label>Endereço</label><input id="f-endereco">
+  <datalist id="dl-clientes"></datalist>
+  <input type="hidden" id="f-cliente-id">
+</div>
+
+<div class="card">
+  <div class="bhead" style="display:flex;justify-content:space-between;align-items:center">
+    <h3 style="margin:0">Equipamento (opcional)</h3>
+    <button type="button" class="btn sec sm" id="eq-toggle">Adicionar equipamento</button>
+  </div>
+  <div id="eq-box" hidden>
+    <label>Equipamento já cadastrado</label>
+    <select id="eq-select"><option value="">— novo equipamento —</option></select>
+    <div class="row">
+      <div><label>Descrição</label><input id="eq-descricao" placeholder="Ex.: Quadro geral"></div>
+      <div><label>Marca</label><input id="eq-marca"></div>
+    </div>
+    <div class="row">
+      <div><label>Modelo</label><input id="eq-modelo"></div>
+      <div><label>Nº Série</label><input id="eq-serie"></div>
+      <div><label>Patrimônio</label><input id="eq-patrimonio"></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Serviço</h3>
+  <div class="row">
+    <div><label>Tipo</label>
+      <select id="f-tipo">
+        <option value="">—</option>
+        <option>instalacao</option><option>manutencao</option>
+        <option>laudo</option><option>projeto</option><option>outro</option>
+      </select></div>
+    <div><label>Prioridade</label>
+      <select id="f-prioridade"><option>normal</option><option>baixa</option><option>alta</option></select></div>
+  </div>
+  <label>Título do serviço</label><input id="f-titulo" placeholder="Ex.: Reparo emergencial de quadro">
+  <label>Local do serviço</label><input id="f-local">
+  <label>Data do serviço (opcional)</label><input type="datetime-local" id="f-data-servico">
+</div>
+
+<div class="actions">
+  <button type="button" class="btn" id="btn-criar">⚡ Gerar relatório de serviço</button>
+  <a class="btn sec" href="/os">Cancelar</a>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/validation.js"></script>
+<script src="/static/js/os_novo.js"></script>
+{% endblock %}
