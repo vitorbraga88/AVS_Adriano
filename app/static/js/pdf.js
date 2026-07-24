@@ -59,12 +59,14 @@ window.AVS = window.AVS || {};
     ".sig .ln{border-top:1px solid #1a1a1a;margin-top:6px;padding-top:4px;font-size:12px;color:#333;}" +
     ".banner{position:absolute;left:0;right:0;bottom:0;width:100%;}" +
     ".banner img{width:100%;display:block;}" +
+    ".hd .fone{font-size:11px;color:#777;margin-top:2px;}" +
     ".obs{font-size:12px;color:#444;margin-top:10px;white-space:pre-wrap;}";
 
   function headerHTML(titulo, numero, dataTxt) {
     return "<div class='hd'><img src='" + LOGO + "'>" +
       "<div><div class='t'>AVS Soluções Elétricas</div>" +
-      "<div class='s'>" + esc(titulo) + "</div></div>" +
+      "<div class='s'>" + esc(titulo) + "</div>" +
+      "<div class='fone'>(81) 9.9352-4445 &middot; (81) 9.9185-4055</div></div>" +
       "<div class='doc'><b>" + esc(numero || "") + "</b><br>" + esc(dataTxt || "") + "</div></div>";
   }
 

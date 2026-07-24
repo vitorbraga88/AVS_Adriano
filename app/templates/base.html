@@ -10,14 +10,14 @@
 <link rel="icon" href="/static/img/favicon-96.png" sizes="96x96">
 <link rel="apple-touch-icon" href="/static/img/apple-touch-icon.png">
 <link rel="manifest" href="/static/manifest.json">
-<meta name="theme-color" content="#1a1a1a">
+<meta name="theme-color" content="#141414">
 {% if request %}{% set _p = request.url.path %}{% endif %}
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="/">
     <img src="/static/img/logo_avs.png" alt="AVS">
-    <span class="brand-name">AVS Elétrica</span>
+    <span class="brand-name">AVS Soluções Elétricas</span>
   </a>
   <nav class="topnav">
     <a href="/"            class="{% if _p == '/' %}ativo{% endif %}">Dashboard</a>
@@ -40,6 +40,11 @@
 {% endif %}
 {% block content %}{% endblock %}
 </main>
+
+<footer class="footer">
+  <span class="footer-brand">AVS Soluções Elétricas</span>
+  <span class="footer-fones">(81) 9.9352-4445 &middot; (81) 9.9185-4055</span>
+</footer>
 
 {% block fab %}{% endblock %}
 
