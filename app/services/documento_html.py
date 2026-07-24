@@ -160,6 +160,9 @@ def build_orcamento(ordem: Ordem) -> tuple[str, str]:
         "total_txt": _brl(total),
         "observacoes": ordem.observacoes,
         "fotos": fotos, "fotos_count": fotos_count,
+        "sig_cliente": _sig(body.get("assinatura")),
+        "sig_empresa": _sig(body.get("assinatura_empresa")),
+        "empresa_nome": (body.get("empresa_nome") or "").strip() or "AVS - Elétrica",
     }
     html = _env.get_template("doc_orcamento.html").render(**ctx)
     nome = f"Orçamento - {ctx['cliente_nome']} - {_dd_mm_aa(ordem.created_at)}.pdf"

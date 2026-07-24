@@ -84,6 +84,13 @@
     </section>
     {% endif %}
 
+    {% if sig_cliente or sig_empresa %}
+    <section class="assin">
+      <div class="campo"><div class="traco">{% if sig_cliente %}<img src="{{ sig_cliente }}" alt="">{% endif %}</div><p><span>Cliente — </span>{{ cliente_nome }}</p></div>
+      <div class="campo"><div class="traco">{% if sig_empresa %}<img src="{{ sig_empresa }}" alt="">{% endif %}</div><p><span>Empresa — </span>{{ empresa_nome }}</p></div>
+    </section>
+    {% endif %}
+
   </div>
 
   {% include "_doc_footer.html" %}

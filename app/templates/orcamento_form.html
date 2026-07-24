@@ -78,10 +78,19 @@
   <div class="foto-grid" id="foto-grid"></div>
 </div>
 
-<div class="card">
-  <h3>Assinatura do cliente</h3>
-  <canvas class="sigpad" id="sigpad"></canvas>
-  <button type="button" class="btn sec sm" id="sig-clear" style="margin-top:8px">Limpar</button>
+<div class="grid grid-2">
+  <div class="card">
+    <h3>Assinatura do cliente</h3>
+    <canvas class="sigpad" id="sigpad"></canvas>
+    <button type="button" class="btn sec sm" id="sig-clear" style="margin-top:8px">Limpar</button>
+  </div>
+  <div class="card">
+    <h3>Assinatura da empresa</h3>
+    <label>Assinante</label>
+    <input id="f-empresa-nome" value="AVS - Elétrica">
+    <canvas class="sigpad" id="sig-empresa"></canvas>
+    <button type="button" class="btn sec sm" id="sig-empresa-clear" style="margin-top:8px">Limpar</button>
+  </div>
 </div>
 
 <div class="actions">
