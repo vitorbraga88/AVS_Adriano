@@ -4,7 +4,7 @@ window.AVS = window.AVS || {};
   "use strict";
   var UI = AVS.UI;
 
-  var itensEl, totalEl, descEl, cam, pad, camposCliente = {};
+  var itensEl, totalEl, descEl, cam, pad, padEmpresa, camposCliente = {};
 
   function el(id) { return document.getElementById(id); }
 
@@ -92,6 +92,8 @@ window.AVS = window.AVS || {};
       validade_txt: validadeTxt(),
       fotos: cam.getPhotos(),
       assinatura: pad.toDataURL(),
+      assinatura_empresa: padEmpresa.toDataURL(),
+      empresa_nome: el("f-empresa-nome").value.trim(),
     };
   }
 
@@ -155,9 +157,12 @@ window.AVS = window.AVS || {};
     var filename = AVS.Pdf.buildPdfFilename("orcamento", dados.cliente.nome, "");
     AVS.Pdf.gerarBlob("orcamento", dados).then(function (b64) {
       var payload = Object.assign({}, dados, { pdf_base64: b64, pdf_filename: filename });
-      // salva assinatura na memória por nome
+      // salva assinaturas na memória por nome (cliente e empresa)
       if (dados.assinatura && dados.cliente.nome) {
         AVS.Signature.saveMemory(dados.cliente.nome, dados.assinatura);
+      }
+      if (dados.assinatura_empresa && dados.empresa_nome) {
+        AVS.Signature.saveMemory(dados.empresa_nome, dados.assinatura_empresa);
       }
       btn.textContent = "Enviando…";
       return fetch("/api/orcamentos/finalizar", {
@@ -209,6 +214,13 @@ window.AVS = window.AVS || {};
     cam = AVS.Camera.create(el("foto-input"), el("foto-grid"));
     pad = AVS.Signature.attach(el("sigpad"), el("f-nome"));
     el("sig-clear").addEventListener("click", function () { pad.clear(); });
+    padEmpresa = AVS.Signature.attach(el("sig-empresa"), el("f-empresa-nome"));
+    el("sig-empresa-clear").addEventListener("click", function () { padEmpresa.clear(); });
+    // carrega assinatura salva da empresa (valor padrão já preenchido)
+    fetch("/api/assinatura?nome=" + encodeURIComponent(el("f-empresa-nome").value.trim()))
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (d && d.data_url) padEmpresa.load(d.data_url); })
+      .catch(function () {});
     AVS.Voice.attach(el("voz-obs"), el("f-observacoes"));
     bindClienteAutocomplete();
     AVS.Offline.monitorConnectivity();

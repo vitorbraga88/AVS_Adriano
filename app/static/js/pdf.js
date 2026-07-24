@@ -130,20 +130,28 @@ window.AVS = window.AVS || {};
       (d.validade_txt ? "<div class='obs'>Validade: " + esc(d.validade_txt) + "</div>" : "") +
       (d.observacoes ? "<h2>Observações</h2><div class='obs'>" + esc(d.observacoes) + "</div>" : "");
 
+    function sigsHTML() {
+      return "<div class='sigs'>" +
+        "<div class='sig'>" + (d.assinatura ? "<img src='" + d.assinatura + "'>" : "") +
+        "<div class='ln'>" + esc(cli.nome || "Cliente") + "</div></div>" +
+        "<div class='sig'>" + (d.assinatura_empresa ? "<img src='" + d.assinatura_empresa + "'>" : "") +
+        "<div class='ln'>" + esc(d.empresa_nome || "AVS - Elétrica") + "</div></div>" +
+        "</div>";
+    }
+
     var hasFotos = fotos.length > 0;
-    if (!hasFotos && d.assinatura) {
-      p1 += "<div class='sigs'><div class='sig'><img src='" + d.assinatura + "'><div class='ln'>" +
-        esc(cli.nome || "Assinatura") + "</div></div></div>";
+    var hasAssinatura = !!(d.assinatura || d.assinatura_empresa);
+    if (!hasFotos && hasAssinatura) {
+      p1 += sigsHTML();
     }
     p1 += bannerHTML() + "</div>";
 
     var pages = [p1];
-    var fp = fotosPages(fotos, !d.assinatura);
+    var fp = fotosPages(fotos, !hasAssinatura);
     pages = pages.concat(fp);
-    if (hasFotos && d.assinatura) {
+    if (hasFotos && hasAssinatura) {
       pages.push("<div class='page'>" + headerHTML("Orçamento", d.numero || "", fmtDate(new Date())) +
-        "<div class='sigs'><div class='sig'><img src='" + d.assinatura + "'><div class='ln'>" +
-        esc(cli.nome || "Assinatura") + "</div></div></div>" + bannerHTML() + "</div>");
+        sigsHTML() + bannerHTML() + "</div>");
     }
     return "<style>" + STYLE + "</style>" + pages.join("");
   }
