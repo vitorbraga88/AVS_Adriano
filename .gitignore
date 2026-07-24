@@ -1,0 +1,23 @@
+# Ambiente Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Banco SQLite (runtime; schema criado via create_all no startup)
+database/*.db
+database/backups/*.db
+
+# PDFs gerados (relatórios/orçamentos) — artefatos de runtime, não fonte
+relatorios/*.pdf
+
+# Editor / SO
+.vscode/
+.DS_Store
+
+# Scripts de debug ad-hoc do desenvolvedor (não fazem parte do app)
+/_check.py
+/_q*.py
+/_tbl.py
+/_test_os.py
+/_o*.json

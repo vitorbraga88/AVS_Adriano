@@ -1,6 +1,0 @@
-{"cliente":{"nome":"Adriano Cesário","telefone":"81999990000","endereco":"Rua A, 100"},
- "equipamento":{"descricao":"Quadro geral","marca":"WEG","modelo":"QG-40","numero_serie":"SN123","patrimonio":"PAT9"},
- "tipo":"instalacao","prioridade":"normal","titulo":"Instalação de quadro","local_servico":"Galpão 2",
- "desconto_pct":10,"observacoes":"teste",
- "itens":[{"descricao":"Serviço A","quantidade":1,"unidade":"un","preco_centavos":10000},
-          {"descricao":"Peça B","quantidade":2,"unidade":"un","preco_centavos":5000}]}
