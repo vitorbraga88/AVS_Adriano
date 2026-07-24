@@ -4,12 +4,12 @@
 <h1>Despesas</h1>
 <p class="muted mono">{{ mes_label }}</p>
 
-<form method="get" action="despesas" class="row">
+<form method="get" action="despesas" class="row" style="align-items:flex-end">
   <div>
     <label for="mes">Mês</label>
     <input type="month" id="mes" name="mes" value="{{ mes }}">
   </div>
-  <div class="actions">
+  <div style="flex:0 0 auto;min-width:0">
     <button type="submit" class="btn sec">Ir</button>
   </div>
 </form>
