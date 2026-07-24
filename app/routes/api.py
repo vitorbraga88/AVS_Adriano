@@ -14,7 +14,9 @@ from app.auth import verify_admin
 from app.deps import get_db
 from app.models import Assinatura, Cliente, Equipamento, Notificacao, Ordem, Sugestao
 from app.services.telegram_notify import notificar_telegram
-from app.services.ordens import atualizar_orcamento, atualizar_relatorio, criar_orcamento
+from app.services.ordens import (
+    atualizar_orcamento, atualizar_relatorio, criar_orcamento, criar_os_direta,
+)
 from app.services.documento_html import build_orcamento, build_os
 from app.services.pdf_render import render_pdf
 
@@ -137,6 +139,33 @@ def finalizar_os(body: dict = Body(...), db: Session = Depends(get_db)):
     resumo = _resumo_ordem(ordem, "OS")
     _entregar_telegram(db, ordem, resumo, "os", pdf_bytes, filename)
     return {"ok": True, "ordem_id": ordem.id, "pdf_url": pdf_url}
+
+
+@router.post("/os/criar")
+def criar_os(body: dict = Body(...), db: Session = Depends(get_db)):
+    """Abre uma OS direta (sem orçamento prévio) e devolve o id para o
+    técnico seguir direto ao relatório de serviço."""
+    cliente = body.get("cliente") or {}
+    equipamento = body.get("equipamento") or None
+    data_servico = None
+    if body.get("data_servico"):
+        try:
+            data_servico = datetime.fromisoformat(body["data_servico"])
+        except ValueError:
+            pass
+    res = criar_os_direta(
+        db,
+        cliente_nome=cliente.get("nome") or "Cliente",
+        cliente_telefone=cliente.get("telefone"),
+        cliente_endereco=cliente.get("endereco"),
+        equipamento=equipamento,
+        titulo=body.get("titulo"),
+        tipo=body.get("tipo"),
+        prioridade=body.get("prioridade") or "normal",
+        local_servico=body.get("local_servico"),
+        data_servico=data_servico,
+    )
+    return {"ok": True, "ordem_id": res["ordem_id"], "numero": res["numero"]}
 
 
 def _entregar_telegram(db: Session, ordem: Ordem, resumo: str, kind: str,

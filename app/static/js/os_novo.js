@@ -43,7 +43,7 @@ window.AVS = window.AVS || {};
     var sel = el("eq-select");
     sel.innerHTML = "<option value=''>— novo equipamento —</option>";
     if (!clienteId) return;
-    fetch("/api/equipamentos?cliente_id=" + encodeURIComponent(clienteId))
+    fetch("api/equipamentos?cliente_id=" + encodeURIComponent(clienteId))
       .then(function (r) { return r.ok ? r.json() : []; })
       .then(function (list) {
         list.forEach(function (e) {
@@ -72,7 +72,7 @@ window.AVS = window.AVS || {};
       }
       el("f-cliente-id").value = "";
       if (q.length < 2) return;
-      fetch("/api/clientes?q=" + encodeURIComponent(q))
+      fetch("api/clientes?q=" + encodeURIComponent(q))
         .then(function (r) { return r.ok ? r.json() : []; })
         .then(function (list) {
           dl.innerHTML = "";
@@ -93,7 +93,7 @@ window.AVS = window.AVS || {};
     ])) return;
     var dados = coletarDados();
     btn.disabled = true; btn.textContent = "Gerando…";
-    fetch("/api/os/criar", {
+    fetch("api/os/criar", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dados),
     }).then(function (r) {
@@ -101,7 +101,7 @@ window.AVS = window.AVS || {};
       return r.json();
     }).then(function (res) {
       UI.toast("OS " + (res.numero || "") + " criada ⚡");
-      window.location = "/os/" + res.ordem_id + "/relatorio";
+      window.location = "os/" + res.ordem_id + "/relatorio";
     }).catch(function (e) {
       UI.toast("Falha ao criar OS: " + e.message, true);
       btn.disabled = false; btn.textContent = "⚡ Gerar relatório de serviço";
