@@ -1,24 +1,31 @@
 /* ===== AVS Soluções Elétricas — Voltage Industrial (tema escuro) ===== */
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap");
+@font-face{font-family:'Archivo Black';font-style:normal;font-weight:400;font-display:swap;src:url("../fonts/archivo-black-400.woff2") format('woff2')}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:400;font-display:swap;src:url("../fonts/barlow-400.woff2") format('woff2')}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:500;font-display:swap;src:url("../fonts/barlow-500.woff2") format('woff2')}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:600;font-display:swap;src:url("../fonts/barlow-600.woff2") format('woff2')}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:700;font-display:swap;src:url("../fonts/barlow-700.woff2") format('woff2')}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:500;font-display:swap;src:url("../fonts/barlow-condensed-500.woff2") format('woff2')}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:600;font-display:swap;src:url("../fonts/barlow-condensed-600.woff2") format('woff2')}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:700;font-display:swap;src:url("../fonts/barlow-condensed-700.woff2") format('woff2')}
 
 :root {
-  --surface: #121414;
-  --surface-1: #1a1c1c;
-  --surface-2: #1e2020;
+  --surface: #141414;
+  --surface-1: #1b1b1b;
+  --surface-2: #1f1f1f;
   --surface-3: #262626;
-  --surface-4: #333535;
-  --onyx: #1a1a1a;
-  --on-surface: #e2e2e2;
-  --on-variant: #b8b0a2;
+  --surface-4: #333333;
+  --onyx: #141414;
+  --on-surface: #e8e5e0;
+  --on-variant: #b0aa9f;
   --outline: #333333;
-  --outline-strong: #514532;
-  --primary: #ffb800;          /* Warning Yellow */
-  --primary-dim: #ffba20;
-  --on-primary: #1a1a1a;
+  --outline-strong: #6b5220;
+  --primary: #F5A81C;          /* Amarelo AVS */
+  --primary-dim: #FFC845;
+  --on-primary: #141414;
   --ok: #7fd1c4;               /* técnico dessaturado (evita verde padrão) */
   --danger: #ffb4ab;
   --danger-bg: #93000a;
-  --input-bg: #121212;
+  --input-bg: #101010;
 
   --r-sm: 0.125rem;
   --r: 0.25rem;
@@ -29,9 +36,9 @@
   --gutter: 24px;
   --shadow-hard: 4px 4px 0 #000;
 
-  --f-head: "Montserrat", system-ui, sans-serif;
-  --f-body: "Work Sans", system-ui, sans-serif;
-  --f-mono: "JetBrains Mono", ui-monospace, monospace;
+  --f-head: "Archivo Black", system-ui, sans-serif;
+  --f-body: "Barlow", system-ui, sans-serif;
+  --f-mono: "Barlow Condensed", system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -99,12 +106,12 @@ main { max-width: 1280px; margin: 0 auto; padding: 24px 20px 40px; }
   border-top: 3px solid var(--primary); padding: 16px; margin-bottom: 16px;
 }
 .grid { display: grid; gap: 16px; }
-.grid-kpi { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.grid-kpi { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
 .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 
 .kpi { background: var(--surface-2); border: 1px solid var(--outline); border-top: 3px solid var(--primary); padding: 16px; }
 .kpi .label { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--on-variant); }
-.kpi .value { font-family: var(--f-head); font-size: 26px; font-weight: 800; margin-top: 4px; }
+.kpi .value { font-family: var(--f-head); font-size: 20px; font-weight: 400; margin-top: 6px; white-space: nowrap; }
 .kpi .value.pos { color: var(--ok); }
 .kpi .value.neg { color: var(--danger); }
 
@@ -165,10 +172,19 @@ textarea { min-height: 90px; resize: vertical; }
 /* ---- Calendar ---- */
 .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
 .cal .h { font-family: var(--f-mono); font-size: 10px; text-transform: uppercase; color: var(--on-variant); text-align: center; padding: 4px; }
-.cal .d { background: var(--surface-1); border: 1px solid var(--outline); min-height: 78px; padding: 4px; font-size: 12px; }
+.cal .d { background: var(--surface-1); border: 1px solid var(--outline); min-height: 90px; max-height: 220px; overflow-y: auto; padding: 4px; font-size: 12px; }
 .cal .d.out { opacity: .35; }
 .cal .d.today { border-color: var(--primary); }
-.cal .ev { display: block; background: var(--surface-3); border-left: 3px solid var(--primary); padding: 2px 4px; margin-top: 2px; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal .ev-wrap { margin-top: 2px; }
+.cal .ev { display: block; background: var(--surface-3); border-left: 3px solid var(--primary); padding: 2px 4px; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal .ev-actions { display: flex; gap: 3px; margin: 2px 0 0 3px; }
+.cal .ev-actions button {
+  font-family: var(--f-mono); font-size: 9px; text-transform: uppercase;
+  letter-spacing: 0.04em; padding: 1px 5px; border-radius: var(--r-sm);
+  border: 1px solid var(--outline-strong); background: transparent;
+  color: var(--on-variant); cursor: pointer;
+}
+.cal .ev-actions button:hover { color: var(--danger); border-color: var(--danger); }
 
 /* ---- Field form blocks (orçamento / OS) ---- */
 .item-row { display: grid; grid-template-columns: 1fr 70px 60px 110px 34px; gap: 8px; align-items: end; margin-bottom: 8px; }
@@ -180,6 +196,11 @@ textarea { min-height: 90px; resize: vertical; }
 .foto-grid figure { margin: 0; position: relative; }
 .foto-grid img { width: 100%; height: 90px; object-fit: cover; border: 1px solid var(--outline); }
 .foto-grid .rm { position: absolute; top: 2px; right: 2px; }
+.foto-grid figure .num-badge {
+  position: absolute; top: 2px; left: 2px; background: var(--primary);
+  color: var(--on-primary); font-family: var(--f-mono); font-weight: 700;
+  font-size: 11px; line-height: 1; padding: 3px 6px; border-radius: var(--r-sm);
+}
 canvas.sigpad { width: 100%; height: 160px; background: #fff; border: 1px solid var(--outline); border-radius: var(--r); touch-action: none; }
 
 /* ---- FAB + bottom nav (mobile) ---- */
@@ -202,3 +223,13 @@ canvas.sigpad { width: 100%; height: 160px; background: #fff; border: 1px solid 
 #toasts { position: fixed; left: 50%; bottom: 100px; transform: translateX(-50%); z-index: 50; display: flex; flex-direction: column; gap: 8px; }
 .toast { background: var(--surface-4); color: var(--on-surface); border-left: 4px solid var(--primary); padding: 10px 16px; border-radius: var(--r); box-shadow: var(--shadow-hard); }
 .toast.err { border-color: var(--danger); }
+
+/* ---- Footer (marca + telefones) ---- */
+.footer {
+  max-width: 1280px; margin: 40px auto 0; padding: 20px;
+  border-top: 1px solid var(--outline); text-align: center;
+  color: var(--on-variant); font-family: var(--f-mono); font-size: 12px;
+  letter-spacing: 0.04em;
+}
+.footer .footer-brand { color: var(--primary); font-weight: 600; }
+.footer .footer-fones { display: block; margin-top: 4px; }
